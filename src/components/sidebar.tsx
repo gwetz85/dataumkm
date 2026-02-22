@@ -51,7 +51,7 @@ export function Sidebar() {
             <Database className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-            DATABASE UMKM
+            DATABASE
           </h1>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1">

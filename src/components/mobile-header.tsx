@@ -71,7 +71,7 @@ export function MobileHeader() {
                         <Database className="h-7 w-7 text-primary-foreground" />
                     </div>
                     <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                        DATABASE UMKM
+                        DATABASE
                     </h1>
                 </div>
                 <nav className="grid gap-1 text-lg font-medium p-4">
@@ -96,7 +96,7 @@ export function MobileHeader() {
         </Sheet>
          <div className="flex items-center gap-3">
             <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-              DATABASE UMKM
+              DATABASE
             </h1>
         </div>
     </header>

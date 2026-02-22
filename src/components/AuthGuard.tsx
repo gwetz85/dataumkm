@@ -43,7 +43,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
                      <div className="flex items-center gap-3">
                         <Database className="h-7 w-7 text-primary" />
                         <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                          DATABASE UMKM
+                          DATABASE
                         </h1>
                     </div>
                     <Button asChild variant="outline">

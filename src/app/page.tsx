@@ -58,7 +58,7 @@ export default function DashboardPage() {
         <div className="mt-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Selamat Datang di DATABASE UMKM!</CardTitle>
+                    <CardTitle>Selamat Datang di DATABASE!</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">

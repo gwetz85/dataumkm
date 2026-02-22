@@ -8,7 +8,7 @@ import AuthGuard from '@/components/AuthGuard';
 
 
 export const metadata: Metadata = {
-  title: 'DATABASE UMKM',
+  title: 'DATABASE',
   description: 'Aplikasi input data pelaku usaha bantuan UMKM',
 };
 

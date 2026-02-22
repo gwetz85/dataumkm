@@ -77,46 +77,6 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
     });
   }, [data, searchTerm, filterBusinessType, filterCoordinator]);
 
-  const exportToCsv = () => {
-    const headers = [
-      'NIK',
-      'No. KK',
-      'Nama Lengkap',
-      'Jenis Kelamin',
-      'No. Ponsel',
-      'Alamat',
-      'Jenis Usaha',
-      'Lokasi Usaha',
-      'Koordinator',
-      'Tanggal Registrasi',
-    ];
-
-    const rows = filteredData.map((item) =>
-      [
-        `'${item.nik}`,
-        `'${item.kk}`,
-        item.fullName,
-        item.gender,
-        `'${item.phoneNumber}`,
-        `"${item.address.replace(/"/g, '""')}"`,
-        item.businessType,
-        item.businessLocation,
-        item.coordinator,
-        format(new Date(item.registrationDate), 'yyyy-MM-dd'),
-      ].join(',')
-    );
-
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'database_umkm_export.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-  
   const addVerifierFooter = (doc: jsPDF) => {
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
@@ -197,7 +157,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
               className="pl-10 w-full bg-background"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 w-full md:w-auto">
              <Select value={filterBusinessType} onValueChange={setFilterBusinessType}>
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Filter Jenis Usaha" />
@@ -220,13 +180,9 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={exportToCsv} variant="outline">
+            <Button onClick={handlePrintAll} variant="outline">
               <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button onClick={handlePrintAll} className="bg-accent text-accent-foreground hover:bg-accent/90">
-              <Printer className="mr-2 h-4 w-4" />
-              Cetak
+              Export PDF
             </Button>
           </div>
         </div>

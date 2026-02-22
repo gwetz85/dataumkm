@@ -58,39 +58,44 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
              item.institutionAddress.toLowerCase().includes(searchLower);
     });
   }, [data, searchTerm]);
-
-  const exportToCsv = () => {
-    const headers = [
-      'Nama Lembaga',
-      'Alamat Lembaga',
-      'Nama Pengusul',
-      'No. Ponsel Pengusul',
-      'Jumlah Pengurus',
-      'Tanggal Registrasi',
-    ];
-
-    const rows = filteredData.map((item) =>
-      [
-        `"${item.institutionName.replace(/"/g, '""')}"`,
-        `"${item.institutionAddress.replace(/"/g, '""')}"`,
-        item.proposerName,
-        `'${item.proposerPhoneNumber}`,
-        item.boardMembers.length,
-        format(new Date(item.registrationDate), 'yyyy-MM-dd'),
-      ].join(',')
-    );
-
-    const csvContent = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'database_lembaga_export.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
   
+  const addVerifierFooter = (doc: jsPDF) => {
+      const pageCount = (doc as any).internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+          doc.setPage(i);
+          doc.setFontSize(8);
+          doc.setTextColor(100);
+          const verifierText = `Data diverifikasi oleh: ${user?.data?.fullName || user?.username || 'N/A'}`;
+          const verifierNik = `NIK Verifikator: ${user?.data?.nik || 'N/A'}`;
+          const printDate = `Tanggal Cetak: ${format(new Date(), 'dd MMMM yyyy, HH:mm')}`;
+
+          doc.text(verifierText, 14, doc.internal.pageSize.height - 15);
+          doc.text(verifierNik, 14, doc.internal.pageSize.height - 10);
+          doc.text(printDate, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 10, { align: 'right' });
+      }
+  };
+
+  const handlePrintAll = () => {
+    const doc = new jsPDF();
+    doc.text("Data Lembaga", 14, 16);
+    (doc as any).autoTable({
+        head: [['Nama Lembaga', 'Nama Pengusul', 'Jumlah Pengurus', 'Jumlah Legalitas', 'Terdaftar']],
+        body: filteredData.map(item => {
+          const legalitiesCount = Object.values(item.legalities).filter(val => typeof val === 'object' && val !== null).length;
+          return [
+            item.institutionName,
+            item.proposerName,
+            item.boardMembers.length,
+            legalitiesCount,
+            format(new Date(item.registrationDate), 'dd MMM yyyy'),
+          ];
+        }),
+        startY: 20,
+    });
+    addVerifierFooter(doc);
+    doc.save('database_lembaga.pdf');
+  };
+
   const handlePrintSingle = (item: Institution) => {
       const doc = new jsPDF();
       doc.setFontSize(16);
@@ -137,19 +142,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
         });
       }
       
-      const pageCount = (doc as any).internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(100);
-            const verifierText = `Data diverifikasi oleh: ${user?.data?.fullName || user?.username || 'N/A'}`;
-            const verifierNik = `NIK Verifikator: ${user?.data?.nik || 'N/A'}`;
-            const printDate = `Tanggal Cetak: ${format(new Date(), 'dd MMMM yyyy, HH:mm')}`;
-
-            doc.text(verifierText, 14, doc.internal.pageSize.height - 15);
-            doc.text(verifierNik, 14, doc.internal.pageSize.height - 10);
-            doc.text(printDate, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 10, { align: 'right' });
-        }
+      addVerifierFooter(doc);
       
       doc.save(`data_lembaga_${item.institutionName.replace(/\s/g, '_')}.pdf`);
   };
@@ -168,9 +161,9 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
             />
           </div>
           <div className="flex gap-2">
-            <Button onClick={exportToCsv} variant="outline">
+            <Button onClick={handlePrintAll} variant="outline">
               <Download className="mr-2 h-4 w-4" />
-              Export
+              Export PDF
             </Button>
           </div>
         </div>

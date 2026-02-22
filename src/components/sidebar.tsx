@@ -8,6 +8,12 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const umkmLinks = [
   { href: '/input-data', label: 'Input Data UMKM', icon: FilePlus },
@@ -81,22 +87,28 @@ export function Sidebar() {
       </nav>
       <div className="mt-auto p-4 border-t">
           {user && (
-            <div className="flex items-center gap-3 mb-4">
-              <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
-                  {user.username.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-bold capitalize">{user.username}</p>
-                <p className="text-xs text-muted-foreground">{user.profile}</p>
-              </div>
-            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-start items-center gap-3 h-auto p-2 text-left">
+                        <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
+                            {user.username.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                            <p className="text-sm font-bold capitalize text-card-foreground">{user.username}</p>
+                            <p className="text-xs text-muted-foreground">{user.profile}</p>
+                        </div>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
+                    <DropdownMenuItem onClick={logout} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
           )}
-          <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
-              <LogOut className="mr-3 h-5 w-5" />
-              Logout
-          </Button>
       </div>
     </aside>
   );

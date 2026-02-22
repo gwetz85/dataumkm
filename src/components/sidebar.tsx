@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/input-data', label: 'Input Data', icon: FilePlus },
   { href: '/database', label: 'Database', icon: Users },
+  { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
 ];
 
 export function Sidebar() {

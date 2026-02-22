@@ -94,8 +94,8 @@ export default function CekDataPage() {
     if (!searchTerm) {
         toast({
             variant: "destructive",
-            title: "Nomor KK diperlukan",
-            description: "Silakan masukkan Nomor KK untuk melakukan pengecekan.",
+            title: "Nomor Pengecekan Diperlukan",
+            description: "Silakan masukkan nomor dari kolom pertama untuk pengecekan.",
         });
         return;
     }
@@ -113,8 +113,9 @@ export default function CekDataPage() {
     setSearchResult(null);
 
     setTimeout(() => {
+        const firstColumnKey = Object.keys(comparisonData[0])[0];
         const result = comparisonData.find(item => 
-            item.kk?.toString() === searchTerm || item['No. KK']?.toString() === searchTerm
+            item[firstColumnKey]?.toString() === searchTerm
         );
         setSearchResult(result || 'not_found');
         setIsSearching(false);
@@ -166,7 +167,7 @@ export default function CekDataPage() {
             <UserX className="h-4 w-4" />
             <AlertTitle>Data Tidak Ditemukan</AlertTitle>
             <AlertDescription>
-                Pelaku usaha dengan Nomor KK <strong>{searchTerm}</strong> tidak ditemukan dalam data pembanding.
+                Data dengan nomor <strong>{searchTerm}</strong> tidak ditemukan dalam data pembanding.
             </AlertDescription>
         </Alert>
       );
@@ -203,7 +204,7 @@ export default function CekDataPage() {
           <CardTitle className="flex items-center gap-2"><Upload /> Upload Data Pembanding</CardTitle>
           <CardDescription>
             Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda dan akan menimpa data pembanding sebelumnya.
-            Pastikan kolom 'No. KK' ada di dalam file Anda.
+            Aplikasi akan menggunakan kolom pertama pada file Excel Anda sebagai kunci unik untuk pengecekan.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -219,12 +220,12 @@ export default function CekDataPage() {
       <Card className="shadow-lg border-none bg-card/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Search /> Cek Data Pelaku Usaha</CardTitle>
-          <CardDescription>Masukkan Nomor Kartu Keluarga (KK) untuk memeriksa apakah data pelaku usaha sudah ada di dalam data pembanding.</CardDescription>
+          <CardDescription>Masukkan nomor dari kolom pertama data pembanding (misal: NIK atau No. KK) untuk memeriksa apakah data pelaku usaha sudah ada.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-2">
                 <Input 
-                    placeholder="Masukkan 16 digit Nomor KK" 
+                    placeholder="Masukkan nomor untuk pengecekan..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

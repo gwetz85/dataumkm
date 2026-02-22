@@ -217,25 +217,29 @@ export default function CekDataPage() {
   
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline font-bold">Cek Data & Upload Data Pembanding</h1>
+      <h1 className="text-3xl font-headline font-bold">
+        {isAuthenticated ? 'Cek Data & Upload Data Pembanding' : 'Cek Data'}
+      </h1>
       
-      <Card className="shadow-lg border-none bg-card/80">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Upload /> Upload Data Pembanding</CardTitle>
-          <CardDescription>
-            Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda dan akan menimpa data pembanding sebelumnya.
-            Aplikasi akan menggunakan kolom pertama pada file Excel Anda sebagai kunci unik untuk pengecekan.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Input 
-            type="file" 
-            onChange={handleFileUpload} 
-            accept=".xlsx, .xls, .csv"
-            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-            />
-        </CardContent>
-      </Card>
+      {isAuthenticated && (
+        <Card className="shadow-lg border-none bg-card/80">
+            <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Upload /> Upload Data Pembanding</CardTitle>
+            <CardDescription>
+                Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda dan akan menimpa data pembanding sebelumnya.
+                Aplikasi akan menggunakan kolom pertama pada file Excel Anda sebagai kunci unik untuk pengecekan.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Input 
+                type="file" 
+                onChange={handleFileUpload} 
+                accept=".xlsx, .xls, .csv"
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                />
+            </CardContent>
+        </Card>
+      )}
 
       <Card className="shadow-lg border-none bg-card/80">
         <CardHeader>
@@ -255,7 +259,16 @@ export default function CekDataPage() {
                     {isSearching ? 'Mencari...' : <><Search className="mr-2"/> Cek Data</>}
                 </Button>
             </div>
-            {comparisonData.length === 0 && !loading && (
+            {comparisonData.length === 0 && !loading && !isAuthenticated && (
+                 <Alert variant="default" className="bg-amber-50 border-amber-200 text-amber-800">
+                    <FileWarning className="h-4 w-4 !text-amber-800" />
+                    <AlertTitle>Data Pembanding Belum Tersedia</AlertTitle>
+                    <AlertDescription>
+                       Data pembanding hanya bisa diunggah oleh pengguna yang sudah login.
+                    </AlertDescription>
+                </Alert>
+            )}
+            {comparisonData.length === 0 && !loading && isAuthenticated && (
                  <Alert variant="default" className="bg-amber-50 border-amber-200 text-amber-800">
                     <FileWarning className="h-4 w-4 !text-amber-800" />
                     <AlertTitle>Data Pembanding Belum Tersedia</AlertTitle>

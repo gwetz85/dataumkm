@@ -31,11 +31,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Search, Download, Printer, MoreHorizontal, Pencil, Trash2, FileText } from 'lucide-react';
+import { Search, Download, Printer, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import type { Institution } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { useInstitution } from '@/context/InstitutionContext';
+import { useAuth } from '@/context/AuthContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
@@ -46,6 +47,7 @@ type InstitutionDataTableProps = {
 
 export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
   const { deleteInstitution } = useInstitution();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = React.useState('');
   
   const filteredData = React.useMemo(() => {
@@ -134,6 +136,20 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
             body: item.boardMembers.map(m => [m.name, m.nik, m.position, m.phoneNumber]),
         });
       }
+      
+      const pageCount = (doc as any).internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            const verifierText = `Data diverifikasi oleh: ${user?.data?.fullName || user?.username || 'N/A'}`;
+            const verifierNik = `NIK Verifikator: ${user?.data?.nik || 'N/A'}`;
+            const printDate = `Tanggal Cetak: ${format(new Date(), 'dd MMMM yyyy, HH:mm')}`;
+
+            doc.text(verifierText, 14, doc.internal.pageSize.height - 15);
+            doc.text(verifierNik, 14, doc.internal.pageSize.height - 10);
+            doc.text(printDate, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 10, { align: 'right' });
+        }
       
       doc.save(`data_lembaga_${item.institutionName.replace(/\s/g, '_')}.pdf`);
   };

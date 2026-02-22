@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -116,6 +116,12 @@ export function MobileHeader() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
                                     <DropdownMenuItem asChild>
+                                        <Link href="/profil" className="cursor-pointer" onClick={() => setOpen(false)}>
+                                            <User className="mr-2 h-4 w-4" />
+                                            <span>Profil</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
                                         <Link href="/tentang" className="cursor-pointer" onClick={() => setOpen(false)}>
                                             <Info className="mr-2 h-4 w-4" />
                                             <span>Tentang</span>
@@ -160,6 +166,12 @@ export function MobileHeader() {
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                        <Link href="/profil" className="cursor-pointer">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Profil</span>
+                        </Link>
+                    </DropdownMenuItem>
                      <DropdownMenuItem asChild>
                         <Link href="/tentang" className="cursor-pointer">
                             <Info className="mr-2 h-4 w-4" />

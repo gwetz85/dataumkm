@@ -3,9 +3,20 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface User {
+export interface UserProfile {
+    fullName?: string;
+    nik?: string;
+    birthPlace?: string;
+    birthDate?: string;
+    phoneNumber?: string;
+    email?: string;
+    address?: string;
+}
+
+export interface User {
     username: string;
-    profile: string;
+    profile: string; // role
+    data: UserProfile;
 }
 
 interface AuthContextType {
@@ -13,6 +24,7 @@ interface AuthContextType {
   user: User | null;
   login: (username?: string, password?: string) => boolean;
   logout: () => void;
+  updateUserProfile: (data: UserProfile) => void;
   loading: boolean;
 }
 
@@ -40,7 +52,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (storedUser && storedUser.username && storedUser.profile) {
                 const userIsValid = validUsers.some(u => u.username === storedUser.username);
                 if (userIsValid) {
-                    setUser(storedUser);
+                    // Ensure user object has the 'data' field
+                    const userWithProfileData = {
+                        ...storedUser,
+                        data: storedUser.data || {},
+                    };
+                    setUser(userWithProfileData);
                     setIsAuthenticated(true);
                 } else {
                     localStorage.removeItem('user');
@@ -62,12 +79,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (u) => u.username === username && u.password === password
     );
     if (validUser) {
-      const userToStore = { username: validUser.username, profile: validUser.profile };
-      localStorage.setItem('user', JSON.stringify(userToStore));
-      setUser(userToStore);
-      setIsAuthenticated(true);
-      router.push('/');
-      return true;
+        const existingStoredUser = JSON.parse(localStorage.getItem('user') || '{}');
+        let userData = {};
+        if (existingStoredUser.username === validUser.username) {
+            userData = existingStoredUser.data || {};
+        }
+
+        const userToStore: User = { 
+            username: validUser.username, 
+            profile: validUser.profile,
+            data: userData,
+        };
+
+        localStorage.setItem('user', JSON.stringify(userToStore));
+        setUser(userToStore);
+        setIsAuthenticated(true);
+        router.push('/');
+        return true;
     }
     return false;
   };
@@ -79,8 +107,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
 
+  const updateUserProfile = (data: UserProfile) => {
+      if (user) {
+          const updatedUser = { ...user, data: { ...user.data, ...data } };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, updateUserProfile, loading }}>
       {children}
     </AuthContext.Provider>
   );

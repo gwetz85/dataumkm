@@ -6,6 +6,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from '@/components/sidebar';
 import { MobileHeader } from '@/components/mobile-header';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Database, LogIn } from 'lucide-react';
+
+const publicPaths = ['/login', '/cek-data'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
@@ -13,7 +18,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && pathname !== '/login') {
+    if (!loading && !isAuthenticated && !publicPaths.includes(pathname)) {
       router.replace('/login');
     }
   }, [isAuthenticated, loading, pathname, router]);
@@ -26,8 +31,37 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       );
   }
 
-  if (!isAuthenticated && pathname !== '/login') {
-    // Still loading or redirecting
+  if (!isAuthenticated && publicPaths.includes(pathname)) {
+    if (pathname === '/login') {
+        return <>{children}</>;
+    }
+    
+    if (pathname === '/cek-data') {
+         return (
+            <div className="flex min-h-screen w-full flex-col bg-background">
+                <header className="bg-card border-b shadow-sm sticky top-0 z-50 flex h-20 items-center gap-4 px-4 sm:px-6 justify-between">
+                     <div className="flex items-center gap-3">
+                        <Database className="h-7 w-7 text-primary" />
+                        <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                          DATABASE UMKM
+                        </h1>
+                    </div>
+                    <Button asChild variant="outline">
+                        <Link href="/login">
+                          <LogIn className="mr-2" />
+                          Login
+                        </Link>
+                    </Button>
+                </header>
+                <main className="flex flex-1 flex-col gap-4 p-4 md:p-8">
+                   {children}
+                </main>
+            </div>
+        );
+    }
+  }
+
+  if (!isAuthenticated && !publicPaths.includes(pathname)) {
     return (
         <div className="flex min-h-screen w-full items-center justify-center">
             <p>Redirecting to login...</p>
@@ -35,11 +69,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
   
-  if (pathname === '/login') {
-    return <>{children}</>;
-  }
-
-  // User is authenticated and not on login page, show the main layout
+  // User is authenticated, show the main layout
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Sidebar />

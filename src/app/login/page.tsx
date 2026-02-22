@@ -24,8 +24,9 @@ import {
 } from '@/components/ui/form';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, Database } from 'lucide-react';
+import { LogIn, Database, FileSearch } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const formSchema = z.object({
   username: z.string().min(1, { message: 'Username wajib diisi.' }),
@@ -109,6 +110,19 @@ export default function LoginPage() {
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex-col items-center justify-center gap-4 pb-6">
+            <div className="relative w-full flex items-center">
+                <div className="flex-grow border-t border-border"></div>
+                <span className="flex-shrink mx-4 text-xs text-muted-foreground">ATAU</span>
+                <div className="flex-grow border-t border-border"></div>
+            </div>
+            <Button variant="outline" className="w-full" asChild>
+                <Link href="/cek-data">
+                    <FileSearch className="mr-2 h-4 w-4" />
+                    Cek Data Publik
+                </Link>
+            </Button>
+        </CardFooter>
       </Card>
     </div>
   );

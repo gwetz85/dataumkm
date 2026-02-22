@@ -63,9 +63,9 @@ export default function CekDataPage() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        const json_data: any[][] = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+        const mappedData: any[] = xlsx.utils.sheet_to_json(worksheet);
         
-        if (json_data.length < 2) {
+        if (mappedData.length < 1) {
              toast({
                 variant: 'destructive',
                 title: 'File Excel Kosong atau Tidak Valid',
@@ -73,15 +73,6 @@ export default function CekDataPage() {
             });
             return;
         }
-
-        const headers = json_data[0].map(h => h.toString().trim());
-        const mappedData = json_data.slice(1).map(row => {
-            const rowData: {[key: string]: any} = {};
-            headers.forEach((header, index) => {
-                rowData[header] = row[index];
-            });
-            return rowData;
-        });
 
         localStorage.setItem('comparisonData', JSON.stringify(mappedData));
         setComparisonData(mappedData);
@@ -126,24 +117,37 @@ export default function CekDataPage() {
 
     setTimeout(() => {
         if (comparisonData.length > 0) {
-            const searchKey = searchType === 'nik' ? 'nik' : 'kk';
-            
             const dataKeys = Object.keys(comparisonData[0]);
-            const actualKey = dataKeys.find(key => key.toLowerCase() === searchKey.toLowerCase());
+            let searchKey;
 
-            if (!actualKey) {
-                 toast({
-                    variant: "destructive",
-                    title: "Kolom Tidak Ditemukan",
-                    description: `Kolom '${searchKey.toUpperCase()}' tidak ditemukan di data pembanding. Pastikan file Excel Anda memiliki kolom 'nik' dan 'kk'.`,
-                });
-                setSearchResult('not_found');
-                setIsSearching(false);
-                return;
+            if (searchType === 'kk') {
+                if (dataKeys.length < 1) {
+                    toast({
+                        variant: "destructive",
+                        title: "Format Data Tidak Sesuai",
+                        description: "Data pembanding tidak memiliki setidaknya satu kolom untuk pengecekan No. KK.",
+                    });
+                    setSearchResult('not_found');
+                    setIsSearching(false);
+                    return;
+                }
+                searchKey = dataKeys[0]; // First column (index 0) for KK
+            } else { // searchType is 'nik'
+                if (dataKeys.length < 2) {
+                    toast({
+                        variant: "destructive",
+                        title: "Format Data Tidak Sesuai",
+                        description: "Data pembanding tidak memiliki kolom kedua untuk pengecekan NIK.",
+                    });
+                    setSearchResult('not_found');
+                    setIsSearching(false);
+                    return;
+                }
+                searchKey = dataKeys[1]; // Second column (index 1) for NIK
             }
 
             const result = comparisonData.find(item => 
-                item[actualKey]?.toString().trim() === searchTerm.trim()
+                item[searchKey]?.toString().trim() === searchTerm.trim()
             );
             setSearchResult(result || 'not_found');
         } else {
@@ -244,8 +248,8 @@ export default function CekDataPage() {
             <CardHeader>
             <CardTitle className="flex items-center gap-2"><Upload /> Upload Data Pembanding</CardTitle>
             <CardDescription>
-                Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda dan akan menimpa data pembanding sebelumnya.
-                Aplikasi akan menggunakan kolom 'nik' dan 'kk' pada file Excel Anda untuk pengecekan.
+                Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda. 
+                <strong className="block mt-1 text-primary">PENTING: Aplikasi akan menggunakan kolom pertama (A) untuk No. KK dan kolom kedua (B) untuk NIK, apapun nama headernya.</strong>
             </CardDescription>
             </CardHeader>
             <CardContent>

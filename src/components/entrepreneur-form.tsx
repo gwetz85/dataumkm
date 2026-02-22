@@ -12,6 +12,7 @@ import {
   Phone,
   User,
   UserCheck,
+  Send,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { Entrepreneur } from '@/lib/types';
 
@@ -44,10 +45,9 @@ type EntrepreneurFormValues = z.infer<typeof formSchema>;
 
 type EntrepreneurFormProps = {
   onFormSubmit: (data: EntrepreneurFormValues) => void;
-  switchToListTab: () => void;
 };
 
-export function EntrepreneurForm({ onFormSubmit, switchToListTab }: EntrepreneurFormProps) {
+export function EntrepreneurForm({ onFormSubmit }: EntrepreneurFormProps) {
   const { toast } = useToast();
 
   const form = useForm<EntrepreneurFormValues>({
@@ -64,6 +64,8 @@ export function EntrepreneurForm({ onFormSubmit, switchToListTab }: Entrepreneur
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   function onSubmit(values: EntrepreneurFormValues) {
     onFormSubmit(values);
     toast({
@@ -71,128 +73,137 @@ export function EntrepreneurForm({ onFormSubmit, switchToListTab }: Entrepreneur
       description: `Data for ${values.fullName} has been added.`,
     });
     form.reset();
-    switchToListTab();
   }
 
   return (
-    <Card className="max-w-4xl mx-auto shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-2xl">Add New Entrepreneur Data</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Card className="max-w-4xl mx-auto shadow-lg border-none bg-card/80">
+      <CardContent className="pt-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <FormField
-                control={form.control}
-                name="nik"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><CreditCard className="w-4 h-4"/> Nomor Induk Kependudukan (NIK)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 327321..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="kk"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><Hash className="w-4 h-4"/> Nomor Kartu Keluarga (KK)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 327321..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><User className="w-4 h-4"/> Nama Lengkap</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Budi Santoso" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><Phone className="w-4 h-4"/> Nomor Ponsel</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. 081234567890" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><User /> Personal Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><User className="w-4 h-4"/> Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Budi Santoso" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><Phone className="w-4 h-4"/> Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 081234567890" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="nik"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><CreditCard className="w-4 h-4"/> National ID (NIK)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 327321..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="kk"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><Hash className="w-4 h-4"/> Family Card No. (KK)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 327321..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                 <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 text-sm"><MapPin className="w-4 h-4"/> Full Address</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="e.g. Jl. Merdeka No. 10, Bandung" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
             </div>
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2"><MapPin className="w-4 h-4"/> Alamat Lengkap</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="e.g. Jl. Merdeka No. 10, Bandung" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid md:grid-cols-2 gap-8">
-              <FormField
-                control={form.control}
-                name="businessType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><Briefcase className="w-4 h-4"/> Usaha</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Kuliner" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="businessLocation"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2"><Home className="w-4 h-4"/> Lokasi Usaha</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Bandung" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="coordinator"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2"><UserCheck className="w-4 h-4"/> Koordinator</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Andi Wijaya" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end">
-              <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                Submit Data
+
+             <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Briefcase /> Business Information</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><Briefcase className="w-4 h-4"/> Business Type</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Culinary" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="businessLocation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><Home className="w-4 h-4"/> Business Location</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Bandung" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+             </div>
+             
+             <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><UserCheck /> Coordinator</h3>
+                <FormField
+                    control={form.control}
+                    name="coordinator"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><UserCheck className="w-4 h-4"/> Coordinator Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Andi Wijaya" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+             </div>
+            
+            <div className="flex justify-end pt-4">
+              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shadow-md" disabled={isSubmitting}>
+                <Send className="mr-2" />
+                {isSubmitting ? 'Submitting...' : 'Submit Data'}
               </Button>
             </div>
           </form>

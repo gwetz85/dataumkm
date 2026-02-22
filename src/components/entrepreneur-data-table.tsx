@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Download } from 'lucide-react';
+import { Search, Download, PlusCircle } from 'lucide-react';
 import type { Entrepreneur } from '@/lib/types';
 import { format } from 'date-fns';
 
@@ -89,22 +89,21 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
   };
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-2xl">Entrepreneur Database</CardTitle>
-        <div className="flex flex-col md:flex-row gap-4 pt-4">
-          <div className="relative flex-1">
+    <Card className="shadow-lg border-none bg-card/80">
+      <CardHeader className="border-b">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, NIK, or location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 w-full bg-background"
             />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full md:w-auto">
              <Select value={filterBusinessType} onValueChange={setFilterBusinessType}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Filter by Business Type" />
               </SelectTrigger>
               <SelectContent>
@@ -116,7 +115,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
               </SelectContent>
             </Select>
             <Select value={filterCoordinator} onValueChange={setFilterCoordinator}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Filter by Coordinator" />
               </SelectTrigger>
               <SelectContent>
@@ -129,16 +128,16 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
             </Select>
             <Button onClick={exportToCsv} className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Download className="mr-2 h-4 w-4" />
-              Export CSV
+              Export
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-muted/50">
                 <TableHead>Full Name</TableHead>
                 <TableHead>Business</TableHead>
                 <TableHead>Location</TableHead>
@@ -150,7 +149,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
             <TableBody>
               {filteredData.length > 0 ? (
                 filteredData.map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium">{item.fullName}</TableCell>
                     <TableCell>{item.businessType}</TableCell>
                     <TableCell>{item.businessLocation}</TableCell>
@@ -161,8 +160,9 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24">
-                    No data found.
+                  <TableCell colSpan={6} className="text-center h-48">
+                     <p className="text-lg text-muted-foreground">No data available.</p>
+                     <p className="text-sm text-muted-foreground">Get started by adding a new entrepreneur.</p>
                   </TableCell>
                 </TableRow>
               )}

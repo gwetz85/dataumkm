@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { EntrepreneurProvider } from '@/context/EntrepreneurContext';
+import { InstitutionProvider } from '@/context/InstitutionContext';
 import { AuthProvider } from '@/context/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
 
@@ -26,12 +27,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
+          <InstitutionProvider>
             <EntrepreneurProvider>
                 <AuthGuard>
                     {children}
                 </AuthGuard>
                 <Toaster />
             </EntrepreneurProvider>
+          </InstitutionProvider>
         </AuthProvider>
       </body>
     </html>

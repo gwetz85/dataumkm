@@ -11,3 +11,38 @@ export type Entrepreneur = {
   coordinator: string;
   registrationDate: string;
 };
+
+export type BoardMember = {
+  name: string;
+  nik: string;
+  phoneNumber: string;
+  position: string;
+};
+
+export type LegalityFile = {
+    name: string;
+    type: string;
+    dataUrl: string;
+} | null;
+
+export type Institution = {
+  id: string;
+  proposerName: string;
+  proposerPhoneNumber: string;
+  institutionName: string;
+  institutionAddress: string;
+  legalities: {
+      skLembaga: boolean;
+      skLembagaFile: LegalityFile;
+      skKemenkumham: boolean;
+      skKemenkumhamFile: LegalityFile;
+      npwpLembaga: boolean;
+      npwpLembagaFile: LegalityFile;
+      skKemenag: boolean;
+      skKemenagFile: LegalityFile;
+      suratDomisili: boolean;
+      suratDomisiliFile: LegalityFile;
+  };
+  boardMembers: BoardMember[];
+  registrationDate: string;
+};

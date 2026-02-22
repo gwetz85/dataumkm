@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Upload, Search, UserCheck, UserX, FileWarning, Terminal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { format } from 'date-fns';
 
 
 export default function CekDataPage() {
@@ -25,7 +26,13 @@ export default function CekDataPage() {
     try {
       const savedData = localStorage.getItem('comparisonData');
       if (savedData) {
-        setComparisonData(JSON.parse(savedData));
+        const dateReviver = (key: string, value: any) => {
+            if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value)) {
+                return new Date(value);
+            }
+            return value;
+        };
+        setComparisonData(JSON.parse(savedData, dateReviver));
       }
     } catch (error) {
       console.error("Failed to parse comparison data from localStorage", error);
@@ -47,7 +54,7 @@ export default function CekDataPage() {
     reader.onload = (e) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = xlsx.read(data, { type: 'array' });
+        const workbook = xlsx.read(data, { type: 'array', cellDates: true });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
@@ -113,11 +120,15 @@ export default function CekDataPage() {
     setSearchResult(null);
 
     setTimeout(() => {
-        const firstColumnKey = Object.keys(comparisonData[0])[0];
-        const result = comparisonData.find(item => 
-            item[firstColumnKey]?.toString() === searchTerm
-        );
-        setSearchResult(result || 'not_found');
+        if (comparisonData.length > 0) {
+            const firstColumnKey = Object.keys(comparisonData[0])[0];
+            const result = comparisonData.find(item => 
+                item[firstColumnKey]?.toString() === searchTerm
+            );
+            setSearchResult(result || 'not_found');
+        } else {
+             setSearchResult('not_found');
+        }
         setIsSearching(false);
     }, 500);
 
@@ -161,6 +172,13 @@ export default function CekDataPage() {
         return <Skeleton className="h-48 w-full" />;
     }
 
+    const formatValue = (value: any) => {
+        if (value instanceof Date && !isNaN(value.getTime())) {
+            return format(value, 'dd/MM/yyyy');
+        }
+        return String(value ?? '-');
+    };
+
     if (searchResult === 'not_found') {
       return (
         <Alert variant="destructive">
@@ -183,7 +201,7 @@ export default function CekDataPage() {
                     {Object.entries(searchResult).map(([key, value]) => (
                         <div key={key} className="grid grid-cols-3 gap-2">
                            <span className="font-semibold capitalize col-span-1">{key.replace(/_/g, ' ')}</span>
-                           <span className="col-span-2">{String(value) || '-'}</span>
+                           <span className="col-span-2">{formatValue(value)}</span>
                         </div>
                     ))}
                 </div>
@@ -220,7 +238,7 @@ export default function CekDataPage() {
       <Card className="shadow-lg border-none bg-card/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Search /> Cek Data Pelaku Usaha</CardTitle>
-          <CardDescription>Masukkan nomor dari kolom pertama data pembanding (misal: NIK atau No. KK) untuk memeriksa apakah data pelaku usaha sudah ada.</CardDescription>
+          <CardDescription>Masukkan nomor dari kolom pertama data pembanding untuk memeriksa apakah data pelaku usaha sudah ada.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-2">

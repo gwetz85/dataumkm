@@ -22,7 +22,7 @@ export default function CekDataPage() {
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [searchType, setSearchType] = React.useState('nik');
-  const [searchResult, setSearchResult] = React.useState<any | null | 'not_found'>(null);
+  const [searchResult, setSearchResult] = React.useState<any[] | any | null | 'not_found'>(null);
   const [isSearching, setIsSearching] = React.useState(false);
   const [terminalInput, setTerminalInput] = React.useState('');
 
@@ -132,6 +132,12 @@ export default function CekDataPage() {
                     return;
                 }
                 searchKey = dataKeys[0]; // First column (index 0) for KK
+                
+                const results = comparisonData.filter(item => 
+                    item[searchKey]?.toString().trim() === searchTerm.trim()
+                );
+                setSearchResult(results.length > 0 ? results : 'not_found');
+
             } else { // searchType is 'nik'
                 if (dataKeys.length < 2) {
                     toast({
@@ -144,12 +150,12 @@ export default function CekDataPage() {
                     return;
                 }
                 searchKey = dataKeys[1]; // Second column (index 1) for NIK
-            }
 
-            const result = comparisonData.find(item => 
-                item[searchKey]?.toString().trim() === searchTerm.trim()
-            );
-            setSearchResult(result || 'not_found');
+                const result = comparisonData.find(item => 
+                    item[searchKey]?.toString().trim() === searchTerm.trim()
+                );
+                setSearchResult(result || 'not_found');
+            }
         } else {
              setSearchResult('not_found');
         }
@@ -216,16 +222,25 @@ export default function CekDataPage() {
     }
 
     if (searchResult && typeof searchResult === 'object') {
+      const results = Array.isArray(searchResult) ? searchResult : [searchResult];
+      const resultCount = results.length;
+      const title = resultCount > 1 
+          ? `${resultCount} Data Ditemukan!`
+          : 'Data Ditemukan!';
       return (
         <Alert>
             <UserCheck className="h-4 w-4" />
-            <AlertTitle>Data Ditemukan!</AlertTitle>
+            <AlertTitle>{title}</AlertTitle>
             <AlertDescription>
-                <div className="mt-2 space-y-2 text-sm">
-                    {Object.entries(searchResult).map(([key, value]) => (
-                        <div key={key} className="grid grid-cols-3 gap-2">
-                           <span className="font-semibold capitalize col-span-1">{key.replace(/_/g, ' ')}</span>
-                           <span className="col-span-2">{formatValue(value)}</span>
+                <div className="space-y-4">
+                    {results.map((item, index) => (
+                         <div key={index} className="mt-2 space-y-2 text-sm border-t pt-4 first:mt-0 first:border-t-0 first:pt-0">
+                            {Object.entries(item).map(([key, value]) => (
+                                <div key={key} className="grid grid-cols-3 gap-2">
+                                <span className="font-semibold capitalize col-span-1">{key.replace(/_/g, ' ')}</span>
+                                <span className="col-span-2">{formatValue(value)}</span>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>

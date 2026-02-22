@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -115,6 +115,13 @@ export function MobileHeader() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/tentang" className="cursor-pointer" onClick={() => setOpen(false)}>
+                                            <Info className="mr-2 h-4 w-4" />
+                                            <span>Tentang</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => { logout(); setOpen(false); }} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
                                         <LogOut className="mr-2 h-4 w-4" />
                                         <span>Logout</span>
@@ -153,7 +160,14 @@ export function MobileHeader() {
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout}>
+                     <DropdownMenuItem asChild>
+                        <Link href="/tentang" className="cursor-pointer">
+                            <Info className="mr-2 h-4 w-4" />
+                            <span>Tentang</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Logout</span>
                     </DropdownMenuItem>

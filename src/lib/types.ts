@@ -3,6 +3,7 @@ export type Entrepreneur = {
   nik: string;
   kk: string;
   fullName: string;
+  gender: 'Laki-laki' | 'Perempuan';
   phoneNumber: string;
   address: string;
   businessType: string;

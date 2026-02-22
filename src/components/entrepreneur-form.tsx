@@ -13,6 +13,7 @@ import {
   User,
   UserCheck,
   Send,
+  Users,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -29,11 +30,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { Entrepreneur } from '@/lib/types';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const formSchema = z.object({
   nik: z.string().length(16, { message: 'NIK must be 16 digits.' }),
   kk: z.string().length(16, { message: 'Nomor KK must be 16 digits.' }),
   fullName: z.string().min(2, { message: 'Full name is required.' }),
+  gender: z.enum(['Laki-laki', 'Perempuan'], {
+    required_error: "You need to select a gender.",
+  }),
   phoneNumber: z.string().min(10, { message: 'Enter a valid phone number.' }),
   address: z.string().min(10, { message: 'Full address is required.' }),
   businessType: z.string().min(2, { message: 'Business type is required.' }),
@@ -56,6 +61,7 @@ export function EntrepreneurForm({ onFormSubmit }: EntrepreneurFormProps) {
       nik: '',
       kk: '',
       fullName: '',
+      gender: undefined,
       phoneNumber: '',
       address: '',
       businessType: '',
@@ -136,6 +142,36 @@ export function EntrepreneurForm({ onFormSubmit }: EntrepreneurFormProps) {
                     )}
                   />
                 </div>
+                 <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="flex items-center gap-2 text-sm"><Users className="w-4 h-4"/> Gender</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex items-center gap-x-4"
+                        >
+                          <FormItem className="flex items-center space-x-2">
+                            <FormControl>
+                              <RadioGroupItem value="Laki-laki" id="male" />
+                            </FormControl>
+                            <FormLabel htmlFor="male" className="font-normal cursor-pointer">Laki-laki</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2">
+                            <FormControl>
+                              <RadioGroupItem value="Perempuan" id="female" />
+                            </FormControl>
+                            <FormLabel htmlFor="female" className="font-normal cursor-pointer">Perempuan</FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                  <FormField
                   control={form.control}
                   name="address"

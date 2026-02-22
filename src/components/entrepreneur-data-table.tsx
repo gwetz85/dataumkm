@@ -55,6 +55,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
       'NIK',
       'No. KK',
       'Nama Lengkap',
+      'Jenis Kelamin',
       'No. Ponsel',
       'Alamat',
       'Jenis Usaha',
@@ -68,6 +69,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
         item.nik,
         item.kk,
         item.fullName,
+        item.gender,
         item.phoneNumber,
         `"${item.address.replace(/"/g, '""')}"`, // Handle quotes in address
         item.businessType,
@@ -139,6 +141,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Full Name</TableHead>
+                <TableHead>Gender</TableHead>
                 <TableHead>Business</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Phone</TableHead>
@@ -151,6 +154,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 filteredData.map((item) => (
                   <TableRow key={item.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium">{item.fullName}</TableCell>
+                    <TableCell>{item.gender}</TableCell>
                     <TableCell>{item.businessType}</TableCell>
                     <TableCell>{item.businessLocation}</TableCell>
                     <TableCell>{item.phoneNumber}</TableCell>
@@ -160,7 +164,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-48">
+                  <TableCell colSpan={7} className="text-center h-48">
                      <p className="text-lg text-muted-foreground">No data available.</p>
                      <p className="text-sm text-muted-foreground">Get started by adding a new entrepreneur.</p>
                   </TableCell>

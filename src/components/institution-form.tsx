@@ -161,7 +161,8 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
     }
   }, [initialData, isEdit, form]);
 
-  const { isSubmitting, watch } = form.formState;
+  const { watch } = form;
+  const { isSubmitting } = form.formState;
   const watchedLegalites = watch("legalities");
 
   function onSubmit(values: InstitutionFormValues) {

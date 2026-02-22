@@ -30,6 +30,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useEntrepreneur } from '@/context/EntrepreneurContext';
+import type { Entrepreneur } from '@/lib/types';
 
 const formSchema = z.object({
   nik: z.string().length(16, { message: 'NIK harus 16 digit.' }),
@@ -49,12 +51,13 @@ type EntrepreneurFormValues = z.infer<typeof formSchema>;
 
 type EntrepreneurFormProps = {
   onFormSubmit: (data: EntrepreneurFormValues) => void;
-  initialData?: Partial<EntrepreneurFormValues> | null;
+  initialData?: Entrepreneur | null;
   isEdit?: boolean;
 };
 
 export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: EntrepreneurFormProps) {
   const { toast } = useToast();
+  const { entrepreneurs } = useEntrepreneur();
 
   const form = useForm<EntrepreneurFormValues>({
     resolver: zodResolver(formSchema),
@@ -92,6 +95,43 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
   const { isSubmitting } = form.formState;
 
   function onSubmit(values: EntrepreneurFormValues) {
+    if (isEdit && initialData) {
+        const otherEntrepreneurs = entrepreneurs.filter(e => e.id !== initialData.id);
+        if (otherEntrepreneurs.some(e => e.nik === values.nik)) {
+            toast({
+                variant: 'destructive',
+                title: 'Gagal Memperbarui Data',
+                description: 'NIK yang Anda masukkan sudah digunakan oleh data lain.',
+            });
+            return;
+        }
+        if (otherEntrepreneurs.some(e => e.kk === values.kk)) {
+            toast({
+                variant: 'destructive',
+                title: 'Gagal Memperbarui Data',
+                description: 'Nomor KK yang Anda masukkan sudah digunakan oleh data lain.',
+            });
+            return;
+        }
+    } else {
+        if (entrepreneurs.some(e => e.nik === values.nik)) {
+            toast({
+                variant: 'destructive',
+                title: 'Gagal Menambahkan Data',
+                description: 'NIK yang Anda masukkan sudah terdaftar.',
+            });
+            return;
+        }
+        if (entrepreneurs.some(e => e.kk === values.kk)) {
+            toast({
+                variant: 'destructive',
+                title: 'Gagal Menambahkan Data',
+                description: 'Nomor KK yang Anda masukkan sudah terdaftar.',
+            });
+            return;
+        }
+    }
+
     onFormSubmit(values);
     toast({
       title: isEdit ? 'Berhasil Diperbarui!' : 'Berhasil!',

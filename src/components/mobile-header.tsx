@@ -8,7 +8,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,7 @@ const navLinks = [
   { href: '/input-data', label: 'Input Data', icon: FilePlus },
   { href: '/database', label: 'Database', icon: Users },
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
+  { href: '/backup', label: 'Backup & Restore', icon: ArrowRightLeft },
 ];
 
 export function MobileHeader() {

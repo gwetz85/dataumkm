@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/input-data', label: 'Input Data', icon: FilePlus },
   { href: '/database', label: 'Database', icon: Users },
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
+  { href: '/backup', label: 'Backup & Restore', icon: ArrowRightLeft },
 ];
 
 export function Sidebar() {

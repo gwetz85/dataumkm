@@ -18,16 +18,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Download, PlusCircle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Search, Download, Printer, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import type { Entrepreneur } from '@/lib/types';
 import { format } from 'date-fns';
+import Link from 'next/link';
+import { useEntrepreneur } from '@/context/EntrepreneurContext';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 
 type EntrepreneurDataTableProps = {
   data: Entrepreneur[];
 };
 
 export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
+  const { deleteEntrepreneur } = useEntrepreneur();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [filterBusinessType, setFilterBusinessType] = React.useState('all');
   const [filterCoordinator, setFilterCoordinator] = React.useState('all');
@@ -66,12 +91,12 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
 
     const rows = filteredData.map((item) =>
       [
-        item.nik,
-        item.kk,
+        `'${item.nik}`,
+        `'${item.kk}`,
         item.fullName,
         item.gender,
-        item.phoneNumber,
-        `"${item.address.replace(/"/g, '""')}"`, // Handle quotes in address
+        `'${item.phoneNumber}`,
+        `"${item.address.replace(/"/g, '""')}"`,
         item.businessType,
         item.businessLocation,
         item.coordinator,
@@ -80,14 +105,63 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
     );
 
     const csvContent = [headers.join(','), ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', 'wiradata_export.csv');
+    link.setAttribute('download', 'database_umkm_export.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+  
+  const handlePrintAll = () => {
+    const doc = new jsPDF();
+    doc.text("Data Pelaku Usaha UMKM", 14, 16);
+    (doc as any).autoTable({
+        head: [['Nama', 'Jenis Kelamin', 'Jenis Usaha', 'Lokasi', 'Koordinator']],
+        body: filteredData.map(item => [
+            item.fullName,
+            item.gender,
+            item.businessType,
+            item.businessLocation,
+            item.coordinator,
+        ]),
+        startY: 20,
+    });
+    doc.save('database_umkm.pdf');
+  };
+
+  const handlePrintSingle = (item: Entrepreneur) => {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text(`Data Pelaku Usaha: ${item.fullName}`, 14, 22);
+      doc.setFontSize(11);
+      (doc as any).autoTable({
+          startY: 30,
+          theme: 'grid',
+          body: [
+              { title: 'NIK', data: item.nik},
+              { title: 'No. KK', data: item.kk },
+              { title: 'Nama Lengkap', data: item.fullName },
+              { title: 'Jenis Kelamin', data: item.gender },
+              { title: 'No. Ponsel', data: item.phoneNumber },
+              { title: 'Alamat', data: item.address },
+              { title: 'Jenis Usaha', data: item.businessType },
+              { title: 'Lokasi Usaha', data: item.businessLocation },
+              { title: 'Koordinator', data: item.coordinator },
+              { title: 'Tanggal Registrasi', data: format(new Date(item.registrationDate), 'dd MMMM yyyy') },
+          ],
+          columnStyles: {
+            title: { fontStyle: 'bold', cellWidth: 45 },
+            data: { cellWidth: 'auto' }
+          },
+          columns: [
+              { header: 'Field', dataKey: 'title' },
+              { header: 'Value', dataKey: 'data' },
+          ],
+      });
+      doc.save(`data_${item.fullName.replace(/\s/g, '_')}.pdf`);
   };
 
   return (
@@ -97,40 +171,42 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, NIK, or location..."
+              placeholder="Cari berdasarkan nama, NIK, atau lokasi..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full bg-background"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full md:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
              <Select value={filterBusinessType} onValueChange={setFilterBusinessType}>
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Filter by Business Type" />
+                <SelectValue placeholder="Filter Jenis Usaha" />
               </SelectTrigger>
               <SelectContent>
-                {businessTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type === 'all' ? 'All Business Types' : type}
-                  </SelectItem>
+                <SelectItem value="all">Semua Jenis Usaha</SelectItem>
+                {businessTypes.filter(t => t !== 'all').map((type) => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={filterCoordinator} onValueChange={setFilterCoordinator}>
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Filter by Coordinator" />
+                <SelectValue placeholder="Filter Koordinator" />
               </SelectTrigger>
               <SelectContent>
-                {coordinators.map((coord) => (
-                  <SelectItem key={coord} value={coord}>
-                    {coord === 'all' ? 'All Coordinators' : coord}
-                  </SelectItem>
+                <SelectItem value="all">Semua Koordinator</SelectItem>
+                {coordinators.filter(c => c !== 'all').map((coord) => (
+                  <SelectItem key={coord} value={coord}>{coord}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={exportToCsv} className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={exportToCsv} variant="outline">
               <Download className="mr-2 h-4 w-4" />
               Export
+            </Button>
+            <Button onClick={handlePrintAll} className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Printer className="mr-2 h-4 w-4" />
+              Cetak
             </Button>
           </div>
         </div>
@@ -140,13 +216,14 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead>Full Name</TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Business</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Coordinator</TableHead>
-                <TableHead>Registered</TableHead>
+                <TableHead>Nama Lengkap</TableHead>
+                <TableHead>Jenis Kelamin</TableHead>
+                <TableHead>Usaha</TableHead>
+                <TableHead>Lokasi</TableHead>
+                <TableHead>No. Ponsel</TableHead>
+                <TableHead>Koordinator</TableHead>
+                <TableHead>Terdaftar</TableHead>
+                <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -160,13 +237,59 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                     <TableCell>{item.phoneNumber}</TableCell>
                     <TableCell>{item.coordinator}</TableCell>
                     <TableCell>{format(new Date(item.registrationDate), 'dd MMM yyyy')}</TableCell>
+                    <TableCell className="text-right">
+                       <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Buka menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                              <DropdownMenuItem asChild>
+                                <Link href={`/input-data?id=${item.id}`} className="cursor-pointer">
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  <span>Edit</span>
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="cursor-pointer">
+                                  <Printer className="mr-2 h-4 w-4" />
+                                  <span>Cetak</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                      <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                                          <Trash2 className="mr-2 h-4 w-4" />
+                                          <span>Hapus</span>
+                                      </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                          <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                              Tindakan ini tidak bisa dibatalkan. Ini akan menghapus data untuk <span className="font-bold">{item.fullName}</span> secara permanen.
+                                          </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                          <AlertDialogCancel>Batal</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => deleteEntrepreneur(item.id)} className="bg-destructive hover:bg-destructive/90">
+                                              Hapus
+                                          </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                  </AlertDialogContent>
+                              </AlertDialog>
+                          </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-48">
-                     <p className="text-lg text-muted-foreground">No data available.</p>
-                     <p className="text-sm text-muted-foreground">Get started by adding a new entrepreneur.</p>
+                  <TableCell colSpan={8} className="text-center h-48">
+                     <p className="text-lg text-muted-foreground">Tidak ada data yang tersedia.</p>
+                     <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data pelaku usaha baru.</p>
                   </TableCell>
                 </TableRow>
               )}

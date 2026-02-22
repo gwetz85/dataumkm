@@ -4,9 +4,14 @@ import * as React from 'react';
 import type { Entrepreneur } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
+type EntrepreneurFormValues = Omit<Entrepreneur, 'id' | 'registrationDate'>;
+
 type EntrepreneurContextType = {
   entrepreneurs: Entrepreneur[];
-  addEntrepreneur: (data: Omit<Entrepreneur, 'id' | 'registrationDate'>) => void;
+  addEntrepreneur: (data: EntrepreneurFormValues) => void;
+  updateEntrepreneur: (id: string, data: EntrepreneurFormValues) => void;
+  deleteEntrepreneur: (id: string) => void;
+  getEntrepreneurById: (id: string) => Entrepreneur | undefined;
   loading: boolean;
 };
 
@@ -32,11 +37,15 @@ export function EntrepreneurProvider({ children }: { children: React.ReactNode }
 
   React.useEffect(() => {
     if (!loading) {
-        localStorage.setItem('entrepreneurs', JSON.stringify(entrepreneurs));
+        try {
+            localStorage.setItem('entrepreneurs', JSON.stringify(entrepreneurs));
+        } catch(error) {
+            console.error("Failed to save entrepreneurs to localStorage", error);
+        }
     }
   }, [entrepreneurs, loading]);
 
-  const addEntrepreneur = (data: Omit<Entrepreneur, 'id' | 'registrationDate'>) => {
+  const addEntrepreneur = (data: EntrepreneurFormValues) => {
     const newEntrepreneur: Entrepreneur = {
       ...data,
       id: crypto.randomUUID(),
@@ -45,9 +54,34 @@ export function EntrepreneurProvider({ children }: { children: React.ReactNode }
     setEntrepreneurs(prev => [newEntrepreneur, ...prev]);
     router.push('/database');
   };
+
+  const updateEntrepreneur = (id: string, data: EntrepreneurFormValues) => {
+    setEntrepreneurs(prev => 
+        prev.map(e => e.id === id ? { ...e, ...data } : e)
+    );
+    router.push('/database');
+  };
+
+  const deleteEntrepreneur = (id: string) => {
+    setEntrepreneurs(prev => prev.filter(e => e.id !== id));
+  };
+  
+  const getEntrepreneurById = (id: string): Entrepreneur | undefined => {
+      if (loading) return undefined;
+      return entrepreneurs.find(e => e.id === id);
+  };
+  
+  const value = { 
+      entrepreneurs, 
+      addEntrepreneur, 
+      loading,
+      updateEntrepreneur,
+      deleteEntrepreneur,
+      getEntrepreneurById
+  };
   
   return (
-    <EntrepreneurContext.Provider value={{ entrepreneurs, addEntrepreneur, loading }}>
+    <EntrepreneurContext.Provider value={value}>
       {children}
     </EntrepreneurContext.Provider>
   );

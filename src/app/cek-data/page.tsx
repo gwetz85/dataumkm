@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Search, UserCheck, UserX, FileWarning } from 'lucide-react';
+import { Upload, Search, UserCheck, UserX, FileWarning, Terminal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -18,6 +18,8 @@ export default function CekDataPage() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [searchResult, setSearchResult] = React.useState<any | null | 'not_found'>(null);
   const [isSearching, setIsSearching] = React.useState(false);
+  const [terminalInput, setTerminalInput] = React.useState('');
+
 
   React.useEffect(() => {
     try {
@@ -120,6 +122,39 @@ export default function CekDataPage() {
 
   };
 
+  const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        if (terminalInput.trim().toLowerCase() === 'hapusdatapembading') {
+            try {
+                localStorage.removeItem('comparisonData');
+                setComparisonData([]);
+                setSearchResult(null);
+                setSearchTerm('');
+                toast({
+                    title: 'Berhasil!',
+                    description: 'Data pembanding telah dihapus dari perangkat.',
+                });
+            } catch (error) {
+                console.error("Failed to remove comparison data", error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Gagal Menghapus Data',
+                    description: 'Terjadi kesalahan saat menghapus data pembanding.',
+                });
+            }
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Perintah Tidak Dikenal',
+                description: `Perintah "${terminalInput}" tidak valid. Gunakan 'hapusdatapembading'.`,
+            });
+        }
+        setTerminalInput('');
+    }
+  };
+
+
   const renderSearchResult = () => {
     if (isSearching) {
         return <Skeleton className="h-48 w-full" />;
@@ -221,6 +256,27 @@ export default function CekDataPage() {
             </CardContent>
          </Card>
       )}
+
+      <Card className="shadow-lg border-destructive/20 border">
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-destructive"><Terminal /> Terminal Aksi Berbahaya</CardTitle>
+              <CardDescription>
+                  Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">hapusdatapembading</code> dan tekan Enter untuk menghapus semua data pembanding dari perangkat Anda.
+              </CardDescription>
+          </CardHeader>
+          <CardContent>
+              <div className="bg-slate-900 text-green-400 font-mono p-2 rounded-md flex items-center gap-2">
+                  <span className="pl-2 text-green-400/70">$</span>
+                  <Input 
+                      placeholder="Ketik perintah di sini..."
+                      className="bg-transparent border-none text-green-400 placeholder:text-green-400/50 focus-visible:ring-0 focus-visible:ring-offset-0 !p-2"
+                      value={terminalInput}
+                      onChange={(e) => setTerminalInput(e.target.value)}
+                      onKeyDown={handleTerminalCommand}
+                  />
+              </div>
+          </CardContent>
+      </Card>
 
     </div>
   );

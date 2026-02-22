@@ -8,8 +8,8 @@ import AuthGuard from '@/components/AuthGuard';
 
 
 export const metadata: Metadata = {
-  title: 'DATABASE',
-  description: 'Aplikasi input data pelaku usaha bantuan UMKM',
+  title: 'SIPDATA',
+  description: 'Sistem Informasi Data Terpadu',
 };
 
 export default function RootLayout({

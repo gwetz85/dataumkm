@@ -10,10 +10,12 @@ import { Upload, Search, UserCheck, UserX, FileWarning, Terminal } from 'lucide-
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { format } from 'date-fns';
+import { useAuth } from '@/context/AuthContext';
 
 
 export default function CekDataPage() {
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
   const [comparisonData, setComparisonData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -137,7 +139,7 @@ export default function CekDataPage() {
   const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        if (terminalInput.trim().toLowerCase() === 'hapusdatapembading') {
+        if (terminalInput.trim() === 'HapusData') {
             try {
                 localStorage.removeItem('comparisonData');
                 setComparisonData([]);
@@ -159,7 +161,7 @@ export default function CekDataPage() {
             toast({
                 variant: 'destructive',
                 title: 'Perintah Tidak Dikenal',
-                description: `Perintah "${terminalInput}" tidak valid. Gunakan 'hapusdatapembading'.`,
+                description: `Perintah "${terminalInput}" tidak valid. Gunakan 'HapusData'.`,
             });
         }
         setTerminalInput('');
@@ -276,26 +278,28 @@ export default function CekDataPage() {
          </Card>
       )}
 
-      <Card className="shadow-lg border-destructive/20 border">
-          <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-destructive"><Terminal /> Terminal Aksi Berbahaya</CardTitle>
-              <CardDescription>
-                  Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">hapusdatapembading</code> dan tekan Enter untuk menghapus semua data pembanding dari perangkat Anda.
-              </CardDescription>
-          </CardHeader>
-          <CardContent>
-              <div className="bg-slate-900 text-green-400 font-mono p-2 rounded-md flex items-center gap-2">
-                  <span className="pl-2 text-green-400/70">$</span>
-                  <Input 
-                      placeholder="Ketik perintah di sini..."
-                      className="bg-transparent border-none text-green-400 placeholder:text-green-400/50 focus-visible:ring-0 focus-visible:ring-offset-0 !p-2"
-                      value={terminalInput}
-                      onChange={(e) => setTerminalInput(e.target.value)}
-                      onKeyDown={handleTerminalCommand}
-                  />
-              </div>
-          </CardContent>
-      </Card>
+      {isAuthenticated && (
+          <Card className="shadow-lg border-destructive/20 border">
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive"><Terminal /> Terminal Aksi Berbahaya</CardTitle>
+                  <CardDescription>
+                      Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">HapusData</code> dan tekan Enter untuk menghapus semua data pembanding dari perangkat Anda.
+                  </CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <div className="bg-slate-900 text-green-400 font-mono p-2 rounded-md flex items-center gap-2">
+                      <span className="pl-2 text-green-400/70">$</span>
+                      <Input 
+                          placeholder="Ketik perintah di sini..."
+                          className="bg-transparent border-none text-green-400 placeholder:text-green-400/50 focus-visible:ring-0 focus-visible:ring-offset-0 !p-2"
+                          value={terminalInput}
+                          onChange={(e) => setTerminalInput(e.target.value)}
+                          onKeyDown={handleTerminalCommand}
+                      />
+                  </div>
+              </CardContent>
+          </Card>
+      )}
 
     </div>
   );

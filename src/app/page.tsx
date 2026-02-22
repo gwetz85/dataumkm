@@ -100,54 +100,40 @@ export default function DashboardPage() {
                 </>
             )}
         </div>
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
-            <div className="xl:col-span-1">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle>Selamat Datang di DATABASE!</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground">
-                            Aplikasi input data pelaku usaha dan lembaga. Gunakan navigasi untuk menambah data baru atau melihat database.
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="xl:col-span-2">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-3"><List className="h-6 w-6"/>Aktivitas Terbaru</CardTitle>
-                        <CardDescription>5 data terakhir yang ditambahkan dari UMKM dan Lembaga.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {loading ? (
-                             <div className="space-y-4">
-                                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
-                            </div>
-                        ) : recentActivity.length > 0 ? (
-                            <div className="space-y-2">
-                                {recentActivity.map((item) => (
-                                    <Link href={item.href} key={item.id} className="block">
-                                        <div className="flex items-center gap-4 p-3 rounded-lg transition-colors hover:bg-muted/50">
-                                            <div className="bg-muted p-3 rounded-full">
-                                                {item.icon}
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="font-semibold leading-tight">{item.name}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {item.type} &bull; {formatDistanceToNow(item.date, { addSuffix: true })}
-                                                </p>
-                                            </div>
+        <div className="mt-8">
+             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3"><List className="h-6 w-6"/>Aktivitas Terbaru</CardTitle>
+                    <CardDescription>5 data terakhir yang ditambahkan dari UMKM dan Lembaga.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {loading ? (
+                         <div className="space-y-4">
+                            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                        </div>
+                    ) : recentActivity.length > 0 ? (
+                        <div className="space-y-2">
+                            {recentActivity.map((item) => (
+                                <Link href={item.href} key={item.id} className="block">
+                                    <div className="flex items-center gap-4 p-3 rounded-lg transition-colors hover:bg-muted/50">
+                                        <div className="bg-muted p-3 rounded-full">
+                                            {item.icon}
                                         </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="text-muted-foreground text-center py-10">Belum ada aktivitas.</p>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
+                                        <div className="flex-1">
+                                            <p className="font-semibold leading-tight">{item.name}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {item.type} &bull; {formatDistanceToNow(item.date, { addSuffix: true })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-muted-foreground text-center py-10">Belum ada aktivitas.</p>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     </>
   );

@@ -51,7 +51,7 @@ export default function DashboardPage() {
   return (
     <>
         <h1 className="text-3xl font-headline font-bold">Dashboard</h1>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {loading ? (
                 <>
                     <Skeleton className="h-28" />
@@ -61,7 +61,7 @@ export default function DashboardPage() {
                 </>
             ) : (
                 <>
-                    <Card className="bg-secondary">
+                    <Card className="bg-secondary transition-all hover:shadow-lg hover:-translate-y-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-secondary-foreground">Total Data UMKM</CardTitle>
                             <Users className="h-5 w-5 text-secondary-foreground" />
@@ -70,7 +70,7 @@ export default function DashboardPage() {
                             <div className="text-3xl font-bold text-secondary-foreground">{totalData}</div>
                         </CardContent>
                     </Card>
-                    <Card className="bg-primary text-primary-foreground">
+                    <Card className="bg-primary text-primary-foreground transition-all hover:shadow-lg hover:-translate-y-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Jumlah Laki-laki</CardTitle>
                             <User className="h-5 w-5" />
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                             <div className="text-3xl font-bold">{maleCount}</div>
                         </CardContent>
                     </Card>
-                    <Card className="bg-accent text-accent-foreground">
+                    <Card className="bg-accent text-accent-foreground transition-all hover:shadow-lg hover:-translate-y-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Jumlah Perempuan</CardTitle>
                             <PersonStanding className="h-5 w-5" />
@@ -88,7 +88,7 @@ export default function DashboardPage() {
                             <div className="text-3xl font-bold">{femaleCount}</div>
                         </CardContent>
                     </Card>
-                    <Card>
+                    <Card className="transition-all hover:shadow-lg hover:-translate-y-1">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Lembaga</CardTitle>
                             <Building2 className="h-5 w-5 text-muted-foreground" />

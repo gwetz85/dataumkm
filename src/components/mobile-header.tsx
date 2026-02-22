@@ -46,7 +46,7 @@ export function MobileHeader() {
         href={link.href}
         onClick={() => setOpen(false)}
         className={cn(
-            'flex items-center gap-4 rounded-xl px-3 py-3 text-muted-foreground hover:text-foreground',
+            'flex items-center gap-4 rounded-xl px-3 py-3 text-muted-foreground transition-all hover:text-foreground',
             isActive && 'bg-muted text-foreground'
         )}
         >

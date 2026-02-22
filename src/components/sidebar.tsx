@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from './ui/button';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -14,6 +16,7 @@ const navLinks = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside className="w-64 flex-shrink-0 bg-card border-r fixed h-full hidden md:flex flex-col">
@@ -43,6 +46,12 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="mt-auto p-4 border-t">
+          <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
+              <LogOut className="mr-3 h-5 w-5" />
+              Logout
+          </Button>
+      </div>
     </aside>
   );
 }

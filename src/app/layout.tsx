@@ -2,8 +2,9 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { EntrepreneurProvider } from '@/context/EntrepreneurContext';
-import { Sidebar } from '@/components/sidebar';
-import { MobileHeader } from '@/components/mobile-header';
+import { AuthProvider } from '@/context/AuthContext';
+import AuthGuard from '@/components/AuthGuard';
+
 
 export const metadata: Metadata = {
   title: 'DATABASE UMKM',
@@ -24,18 +25,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <EntrepreneurProvider>
-          <div className="flex min-h-screen w-full flex-col bg-background">
-            <Sidebar />
-            <div className="flex flex-col md:ml-64">
-              <MobileHeader />
-              <main className="flex flex-1 flex-col gap-4 p-4 md:p-8">
-                {children}
-              </main>
-            </div>
-          </div>
-          <Toaster />
-        </EntrepreneurProvider>
+        <AuthProvider>
+            <EntrepreneurProvider>
+                <AuthGuard>
+                    {children}
+                </AuthGuard>
+                <Toaster />
+            </EntrepreneurProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -116,10 +116,15 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
         institutionAddress: '',
         legalities: {
             skLembaga: false,
+            skLembagaFile: null,
             skKemenkumham: false,
+            skKemenkumhamFile: null,
             npwpLembaga: false,
+            npwpLembagaFile: null,
             skKemenag: false,
+            skKemenagFile: null,
             suratDomisili: false,
+            suratDomisiliFile: null,
         },
         boardMembers: [{name: '', nik: '', phoneNumber: '', position: ''}]
     },

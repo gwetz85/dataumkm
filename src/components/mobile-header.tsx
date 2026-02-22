@@ -36,8 +36,8 @@ export function MobileHeader() {
                     <div className="bg-primary p-3 rounded-xl shadow-md">
                         <Database className="h-7 w-7 text-primary-foreground" />
                     </div>
-                    <h1 className="text-2xl font-headline font-bold text-primary tracking-tighter">
-                        WiraData
+                    <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                        DATABASE UMKM
                     </h1>
                 </div>
                 <nav className="grid gap-2 text-lg font-medium p-4">
@@ -63,7 +63,7 @@ export function MobileHeader() {
         </Sheet>
          <div className="flex items-center gap-3">
             <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-              WiraData
+              DATABASE UMKM
             </h1>
         </div>
     </header>

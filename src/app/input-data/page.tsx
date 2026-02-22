@@ -10,7 +10,7 @@ export default function InputDataPage() {
     return (
         <>
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-headline font-bold">Add New Entrepreneur</h1>
+                <h1 className="text-3xl font-headline font-bold">Input Data Pelaku Usaha</h1>
             </div>
             <EntrepreneurForm onFormSubmit={addEntrepreneur} />
         </>

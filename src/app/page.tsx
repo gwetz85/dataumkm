@@ -58,11 +58,11 @@ export default function DashboardPage() {
         <div className="mt-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Welcome to WiraData!</CardTitle>
+                    <CardTitle>Selamat Datang di DATABASE UMKM!</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">
-                        Use the navigation on the left to add new entrepreneur data or view the existing database.
+                        Aplikasi input data pelaku usaha bantuan UMKM. Gunakan navigasi untuk menambah data baru atau melihat database.
                     </p>
                 </CardContent>
             </Card>

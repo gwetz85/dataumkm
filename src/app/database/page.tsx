@@ -15,11 +15,11 @@ export default function DatabasePage() {
   return (
     <>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <h1 className="text-3xl font-headline font-bold">Entrepreneur Database</h1>
+            <h1 className="text-3xl font-headline font-bold">Database UMKM</h1>
             <Button asChild className="shadow-md w-full md:w-auto">
                 <Link href="/input-data">
                     <PlusCircle className="mr-2" />
-                    Add New Data
+                    Tambah Data Baru
                 </Link>
             </Button>
         </div>

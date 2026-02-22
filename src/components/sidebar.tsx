@@ -20,8 +20,8 @@ export function Sidebar() {
           <div className="bg-primary p-3 rounded-xl shadow-md">
             <Database className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-headline font-bold text-primary tracking-tighter">
-            WiraData
+          <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+            DATABASE UMKM
           </h1>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-2">

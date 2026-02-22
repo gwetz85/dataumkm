@@ -6,8 +6,8 @@ import { Sidebar } from '@/components/sidebar';
 import { MobileHeader } from '@/components/mobile-header';
 
 export const metadata: Metadata = {
-  title: 'WiraData',
-  description: 'Aplikasi pendataan pelaku usaha',
+  title: 'DATABASE UMKM',
+  description: 'Aplikasi input data pelaku usaha bantuan UMKM',
 };
 
 export default function RootLayout({

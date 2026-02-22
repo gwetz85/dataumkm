@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import { Avatar, AvatarFallback } from './ui/avatar';
 
 const umkmLinks = [
   { href: '/input-data', label: 'Input Data UMKM', icon: FilePlus },
@@ -25,7 +26,7 @@ const utilityLinks = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
@@ -79,6 +80,19 @@ export function Sidebar() {
         {utilityLinks.map(createLink)}
       </nav>
       <div className="mt-auto p-4 border-t">
+          {user && (
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
+                  {user.username.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-bold capitalize">{user.username}</p>
+                <p className="text-xs text-muted-foreground">{user.profile}</p>
+              </div>
+            </div>
+          )}
           <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
               <LogOut className="mr-3 h-5 w-5" />
               Logout

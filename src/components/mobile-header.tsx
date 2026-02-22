@@ -13,6 +13,15 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Separator } from './ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -36,7 +45,7 @@ const utilityLinks = [
 export function MobileHeader() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
@@ -57,48 +66,79 @@ export function MobileHeader() {
   }
 
   return (
-    <header className="md:hidden bg-card border-b shadow-sm sticky top-0 z-50 flex h-20 items-center gap-4 px-4 sm:px-6">
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button size="icon" variant="outline">
-                    <PanelLeft className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="sm:max-w-xs p-0 flex flex-col">
-                <div className="flex items-center gap-3 h-20 px-6 border-b">
-                    <div className="bg-primary p-3 rounded-xl shadow-md">
-                        <Database className="h-7 w-7 text-primary-foreground" />
-                    </div>
-                    <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                        DATABASE
-                    </h1>
-                </div>
-                <nav className="grid gap-1 text-lg font-medium p-4">
-                     {navLinks.map(createLink)}
-                     <Separator className="my-2" />
-                     <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
-                     {umkmLinks.map(createLink)}
-                     <Separator className="my-2" />
-                     <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
-                     {institutionLinks.map(createLink)}
-                     <Separator className="my-2" />
-                     <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
-                     {utilityLinks.map(createLink)}
-                </nav>
-                <div className="mt-auto p-4 border-t">
-                    <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { logout(); setOpen(false); }}>
-                        <LogOut className="mr-4 h-5 w-5" />
-                        Logout
+    <header className="md:hidden bg-card border-b shadow-sm sticky top-0 z-50 flex h-20 items-center gap-4 px-4 sm:px-6 justify-between">
+        <div className="flex items-center gap-4">
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                    <Button size="icon" variant="outline">
+                        <PanelLeft className="h-5 w-5" />
+                        <span className="sr-only">Toggle Menu</span>
                     </Button>
-                </div>
-            </SheetContent>
-        </Sheet>
-         <div className="flex items-center gap-3">
-            <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-              DATABASE
-            </h1>
+                </SheetTrigger>
+                <SheetContent side="left" className="sm:max-w-xs p-0 flex flex-col">
+                    <div className="flex items-center gap-3 h-20 px-6 border-b">
+                        <div className="bg-primary p-3 rounded-xl shadow-md">
+                            <Database className="h-7 w-7 text-primary-foreground" />
+                        </div>
+                        <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                            DATABASE
+                        </h1>
+                    </div>
+                    <nav className="grid gap-1 text-lg font-medium p-4">
+                        {navLinks.map(createLink)}
+                        <Separator className="my-2" />
+                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
+                        {umkmLinks.map(createLink)}
+                        <Separator className="my-2" />
+                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
+                        {institutionLinks.map(createLink)}
+                        <Separator className="my-2" />
+                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
+                        {utilityLinks.map(createLink)}
+                    </nav>
+                    <div className="mt-auto p-4 border-t">
+                        <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => { logout(); setOpen(false); }}>
+                            <LogOut className="mr-4 h-5 w-5" />
+                            Logout
+                        </Button>
+                    </div>
+                </SheetContent>
+            </Sheet>
+            <div className="flex items-center gap-3">
+                <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                DATABASE
+                </h1>
+            </div>
         </div>
+        
+        {user && (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                        <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
+                                {user.username.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none capitalize">{user.username}</p>
+                            <p className="text-xs leading-none text-muted-foreground">
+                                {user.profile}
+                            </p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        )}
     </header>
   );
 }

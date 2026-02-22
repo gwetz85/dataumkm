@@ -11,6 +11,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { format } from 'date-fns';
 import { useAuth } from '@/context/AuthContext';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 export default function CekDataPage() {
@@ -19,6 +21,7 @@ export default function CekDataPage() {
   const [comparisonData, setComparisonData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchType, setSearchType] = React.useState('nik');
   const [searchResult, setSearchResult] = React.useState<any | null | 'not_found'>(null);
   const [isSearching, setIsSearching] = React.useState(false);
   const [terminalInput, setTerminalInput] = React.useState('');
@@ -104,7 +107,7 @@ export default function CekDataPage() {
         toast({
             variant: "destructive",
             title: "Nomor Pengecekan Diperlukan",
-            description: "Silakan masukkan nomor dari kolom pertama untuk pengecekan.",
+            description: `Silakan masukkan ${searchType === 'nik' ? 'NIK' : 'Nomor KK'} untuk pengecekan.`,
         });
         return;
     }
@@ -123,9 +126,24 @@ export default function CekDataPage() {
 
     setTimeout(() => {
         if (comparisonData.length > 0) {
-            const firstColumnKey = Object.keys(comparisonData[0])[0];
+            const searchKey = searchType === 'nik' ? 'nik' : 'kk';
+            
+            const dataKeys = Object.keys(comparisonData[0]);
+            const actualKey = dataKeys.find(key => key.toLowerCase() === searchKey.toLowerCase());
+
+            if (!actualKey) {
+                 toast({
+                    variant: "destructive",
+                    title: "Kolom Tidak Ditemukan",
+                    description: `Kolom '${searchKey.toUpperCase()}' tidak ditemukan di data pembanding. Pastikan file Excel Anda memiliki kolom 'nik' dan 'kk'.`,
+                });
+                setSearchResult('not_found');
+                setIsSearching(false);
+                return;
+            }
+
             const result = comparisonData.find(item => 
-                item[firstColumnKey]?.toString() === searchTerm
+                item[actualKey]?.toString().trim() === searchTerm.trim()
             );
             setSearchResult(result || 'not_found');
         } else {
@@ -187,7 +205,7 @@ export default function CekDataPage() {
             <UserX className="h-4 w-4" />
             <AlertTitle>Data Tidak Ditemukan</AlertTitle>
             <AlertDescription>
-                Data dengan nomor <strong>{searchTerm}</strong> tidak ditemukan dalam data pembanding.
+                Data dengan {searchType === 'nik' ? 'NIK' : 'No. KK'} <strong>{searchTerm}</strong> tidak ditemukan dalam data pembanding.
             </AlertDescription>
         </Alert>
       );
@@ -227,7 +245,7 @@ export default function CekDataPage() {
             <CardTitle className="flex items-center gap-2"><Upload /> Upload Data Pembanding</CardTitle>
             <CardDescription>
                 Upload file Excel (.xlsx, .xls) sebagai data pembanding. Data ini akan disimpan di perangkat Anda dan akan menimpa data pembanding sebelumnya.
-                Aplikasi akan menggunakan kolom pertama pada file Excel Anda sebagai kunci unik untuk pengecekan.
+                Aplikasi akan menggunakan kolom 'nik' dan 'kk' pada file Excel Anda untuk pengecekan.
             </CardDescription>
             </CardHeader>
             <CardContent>
@@ -244,12 +262,22 @@ export default function CekDataPage() {
       <Card className="shadow-lg border-none bg-card/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Search /> Cek Data Pelaku Usaha</CardTitle>
-          <CardDescription>Masukkan nomor dari kolom pertama data pembanding untuk memeriksa apakah data pelaku usaha sudah ada.</CardDescription>
+          <CardDescription>Pilih jenis pengecekan (NIK atau No. KK), lalu masukkan nomor untuk memeriksa apakah data pelaku usaha sudah ada di dalam data pembanding.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+            <RadioGroup value={searchType} onValueChange={(value) => setSearchType(value)} className="flex gap-4">
+              <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="nik" id="r-nik" />
+                  <Label htmlFor="r-nik">Berdasarkan NIK</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="kk" id="r-kk" />
+                  <Label htmlFor="r-kk">Berdasarkan No. KK</Label>
+              </div>
+            </RadioGroup>
             <div className="flex flex-col sm:flex-row gap-2">
                 <Input 
-                    placeholder="Masukkan nomor untuk pengecekan..." 
+                    placeholder={`Masukkan ${searchType === 'nik' ? 'NIK' : 'Nomor KK'} untuk pengecekan...`} 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

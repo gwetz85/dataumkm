@@ -10,6 +10,7 @@ export type Entrepreneur = {
   businessLocation: string;
   coordinator: string;
   registrationDate: string;
+  barcode: string;
 };
 
 export type BoardMember = {
@@ -45,4 +46,5 @@ export type Institution = {
   };
   boardMembers: BoardMember[];
   registrationDate: string;
+  barcode: string;
 };

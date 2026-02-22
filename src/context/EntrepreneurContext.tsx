@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { Entrepreneur } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
-type EntrepreneurFormValues = Omit<Entrepreneur, 'id' | 'registrationDate'>;
+type EntrepreneurFormValues = Omit<Entrepreneur, 'id' | 'registrationDate' | 'barcode'>;
 
 type EntrepreneurContextType = {
   entrepreneurs: Entrepreneur[];
@@ -50,6 +50,7 @@ export function EntrepreneurProvider({ children }: { children: React.ReactNode }
       ...data,
       id: crypto.randomUUID(),
       registrationDate: new Date().toISOString(),
+      barcode: Math.floor(10000000 + Math.random() * 90000000).toString(),
     };
     setEntrepreneurs(prev => [newEntrepreneur, ...prev]);
     router.push('/database');

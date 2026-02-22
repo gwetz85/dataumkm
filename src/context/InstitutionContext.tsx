@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { Institution } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
-type InstitutionFormValues = Omit<Institution, 'id' | 'registrationDate'>;
+type InstitutionFormValues = Omit<Institution, 'id' | 'registrationDate' | 'barcode'>;
 
 type InstitutionContextType = {
   institutions: Institution[];
@@ -50,6 +50,7 @@ export function InstitutionProvider({ children }: { children: React.ReactNode })
       ...data,
       id: crypto.randomUUID(),
       registrationDate: new Date().toISOString(),
+      barcode: Math.floor(10000000 + Math.random() * 90000000).toString(),
     };
     setInstitutions(prev => [newInstitution, ...prev]);
     router.push('/database-lembaga');
@@ -57,7 +58,7 @@ export function InstitutionProvider({ children }: { children: React.ReactNode })
 
   const updateInstitution = (id: string, data: InstitutionFormValues) => {
     setInstitutions(prev => 
-        prev.map(e => e.id === id ? { ...e, ...data, id: e.id, registrationDate: e.registrationDate } : e)
+        prev.map(e => e.id === id ? { ...e, ...data, id: e.id, registrationDate: e.registrationDate, barcode: e.barcode } : e)
     );
     router.push('/database-lembaga');
   };

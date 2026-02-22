@@ -68,6 +68,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
       const matchesSearch =
         item.fullName.toLowerCase().includes(searchLower) ||
         item.nik.includes(searchLower) ||
+        item.barcode.includes(searchLower) ||
         item.businessLocation.toLowerCase().includes(searchLower);
 
       const matchesBusinessType = filterBusinessType === 'all' || item.businessType === filterBusinessType;
@@ -97,9 +98,10 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
     const doc = new jsPDF();
     doc.text("Data Pelaku Usaha UMKM", 14, 16);
     (doc as any).autoTable({
-        head: [['Nama', 'Jenis Kelamin', 'Jenis Usaha', 'Lokasi', 'Koordinator']],
+        head: [['Nama', 'Kode Verifikasi', 'Jenis Kelamin', 'Jenis Usaha', 'Lokasi', 'Koordinator']],
         body: filteredData.map(item => [
             item.fullName,
+            item.barcode,
             item.gender,
             item.businessType,
             item.businessLocation,
@@ -120,6 +122,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           startY: 30,
           theme: 'grid',
           body: [
+              { title: 'Kode Verifikasi', data: item.barcode },
               { title: 'NIK', data: item.nik},
               { title: 'No. KK', data: item.kk },
               { title: 'Nama Lengkap', data: item.fullName },
@@ -151,7 +154,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari berdasarkan nama, NIK, atau lokasi..."
+              placeholder="Cari berdasarkan nama, NIK, kode, atau lokasi..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full bg-background"
@@ -193,6 +196,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Nama Lengkap</TableHead>
+                <TableHead>Kode Verifikasi</TableHead>
                 <TableHead>Jenis Kelamin</TableHead>
                 <TableHead>Usaha</TableHead>
                 <TableHead>Lokasi</TableHead>
@@ -207,6 +211,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 filteredData.map((item) => (
                   <TableRow key={item.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium">{item.fullName}</TableCell>
+                    <TableCell className="font-mono">{item.barcode}</TableCell>
                     <TableCell>{item.gender}</TableCell>
                     <TableCell>{item.businessType}</TableCell>
                     <TableCell>{item.businessLocation}</TableCell>
@@ -263,7 +268,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center h-48">
+                  <TableCell colSpan={9} className="text-center h-48">
                      <p className="text-lg text-muted-foreground">Tidak ada data yang tersedia.</p>
                      <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data pelaku usaha baru.</p>
                   </TableCell>

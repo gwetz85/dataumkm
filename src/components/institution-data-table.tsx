@@ -55,6 +55,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
       const searchLower = searchTerm.toLowerCase();
       return item.institutionName.toLowerCase().includes(searchLower) ||
              item.proposerName.toLowerCase().includes(searchLower) ||
+             item.barcode.includes(searchLower) ||
              item.institutionAddress.toLowerCase().includes(searchLower);
     });
   }, [data, searchTerm]);
@@ -79,11 +80,12 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
     const doc = new jsPDF();
     doc.text("Data Lembaga", 14, 16);
     (doc as any).autoTable({
-        head: [['Nama Lembaga', 'Nama Pengusul', 'Jumlah Pengurus', 'Jumlah Legalitas', 'Terdaftar']],
+        head: [['Nama Lembaga', 'Kode Verifikasi', 'Nama Pengusul', 'Jumlah Pengurus', 'Jumlah Legalitas', 'Terdaftar']],
         body: filteredData.map(item => {
           const legalitiesCount = Object.values(item.legalities).filter(val => typeof val === 'object' && val !== null).length;
           return [
             item.institutionName,
+            item.barcode,
             item.proposerName,
             item.boardMembers.length,
             legalitiesCount,
@@ -103,6 +105,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
       doc.setFontSize(11);
       
       const generalData = [
+          { title: 'Kode Verifikasi', data: item.barcode },
           { title: 'Nama Lembaga', data: item.institutionName },
           { title: 'Alamat Lembaga', data: item.institutionAddress },
           { title: 'Nama Pengusul', data: item.proposerName },
@@ -154,7 +157,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari berdasarkan nama lembaga, pengusul, atau alamat..."
+              placeholder="Cari berdasarkan nama lembaga, pengusul, kode, atau alamat..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full bg-background"
@@ -174,6 +177,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Nama Lembaga</TableHead>
+                <TableHead>Kode Verifikasi</TableHead>
                 <TableHead>Nama Pengusul</TableHead>
                 <TableHead>Jumlah Pengurus</TableHead>
                 <TableHead>Jumlah Legalitas</TableHead>
@@ -188,6 +192,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
                   return (
                     <TableRow key={item.id} className="hover:bg-muted/20">
                         <TableCell className="font-medium">{item.institutionName}</TableCell>
+                        <TableCell className="font-mono">{item.barcode}</TableCell>
                         <TableCell>{item.proposerName}</TableCell>
                         <TableCell>{item.boardMembers.length}</TableCell>
                         <TableCell>{legalitiesCount}</TableCell>
@@ -243,7 +248,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-48">
+                  <TableCell colSpan={7} className="text-center h-48">
                      <p className="text-lg text-muted-foreground">Tidak ada data lembaga yang tersedia.</p>
                      <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data lembaga baru.</p>
                   </TableCell>

@@ -42,9 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // This is to migrate from the old `isAuthenticated` key
-    localStorage.removeItem('isAuthenticated'); 
-
     const storedUserJSON = localStorage.getItem('user');
     if (storedUserJSON) {
         try {
@@ -52,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (storedUser && storedUser.username && storedUser.profile) {
                 const userIsValid = validUsers.some(u => u.username === storedUser.username);
                 if (userIsValid) {
-                    // Ensure user object has the 'data' field
                     const userWithProfileData = {
                         ...storedUser,
                         data: storedUser.data || {},

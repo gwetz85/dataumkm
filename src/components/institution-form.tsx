@@ -17,6 +17,7 @@ import {
   Users,
   X,
   Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -78,6 +79,8 @@ const formSchema = z.object({
   proposerPhoneNumber: z.string().min(10, { message: 'Masukkan nomor ponsel yang valid.' }),
   institutionName: z.string().min(2, { message: 'Nama lembaga wajib diisi.' }),
   institutionAddress: z.string().min(10, { message: 'Alamat lembaga wajib diisi.' }),
+  proposalDescription: z.string().min(10, { message: 'Keterangan usulan wajib diisi.' }),
+  activityPhoto: fileSchema.refine(file => file, { message: "Foto plang/kegiatan wajib di-upload." }),
   legalities: legalitySchema,
   boardMembers: z.array(z.object({
       name: z.string().min(2, "Nama pengurus wajib diisi."),
@@ -114,6 +117,8 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
         proposerPhoneNumber: '',
         institutionName: '',
         institutionAddress: '',
+        proposalDescription: '',
+        activityPhoto: null,
         legalities: {
             skLembaga: false,
             skLembagaFile: null,
@@ -144,6 +149,8 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
         proposerPhoneNumber: '',
         institutionName: '',
         institutionAddress: '',
+        proposalDescription: '',
+        activityPhoto: null,
         legalities: {
             skLembaga: false,
             skLembagaFile: null,
@@ -163,7 +170,6 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
 
   const { watch } = form;
   const { isSubmitting } = form.formState;
-  const watchedLegalites = watch("legalities");
 
   function onSubmit(values: InstitutionFormValues) {
     onFormSubmit(values);
@@ -191,6 +197,22 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
           reader.readAsDataURL(file);
       }
   };
+
+  const handleSingleFileChange = (fieldName: 'activityPhoto', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (loadEvent) => {
+            const dataUrl = loadEvent.target?.result as string;
+            form.setValue(fieldName, {
+                name: file.name,
+                type: file.type,
+                dataUrl: dataUrl,
+            }, { shouldValidate: true });
+        };
+        reader.readAsDataURL(file);
+    }
+  }
 
   const LegalityUploader = ({ fieldName, label }: { fieldName: keyof z.infer<typeof legalitySchema>, label: string }) => {
       const isChecked = watch(`legalities.${fieldName.replace('File', '') as 'skLembaga'}`);
@@ -267,6 +289,57 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
                     <FormMessage />
                   </FormItem>
                 )} />
+            </div>
+
+            <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><FileText /> Informasi Usulan</h3>
+                <FormField
+                    control={form.control}
+                    name="proposalDescription"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="flex items-center gap-2 text-sm"><FileText/> Keterangan Usulan</FormLabel>
+                        <FormControl>
+                            <Textarea placeholder="Jelaskan secara singkat mengenai usulan lembaga..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="activityPhoto"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="flex items-center gap-2 text-sm"><ImageIcon/> Foto Plang / Foto Kegiatan</FormLabel>
+                            {field.value ? (
+                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                                    <div className="flex items-center gap-2 text-sm font-medium">
+                                        <FileText className="w-4 h-4 text-muted-foreground"/>
+                                        <span className="truncate max-w-xs">{field.value.name}</span>
+                                    </div>
+                                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => form.setValue(`activityPhoto`, null, { shouldValidate: true })}>
+                                        <X className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <FormControl>
+                                    <div className="relative">
+                                        <Upload className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input 
+                                            type="file" 
+                                            onChange={(e) => handleSingleFileChange('activityPhoto', e)} 
+                                            accept="image/*" 
+                                            className="pl-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                        />
+                                    </div>
+                                </FormControl>
+                            )}
+                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </div>
 
             <div className="space-y-4 p-4 border rounded-lg">

@@ -32,6 +32,8 @@ export type Institution = {
   proposerPhoneNumber: string;
   institutionName: string;
   institutionAddress: string;
+  proposalDescription: string;
+  activityPhoto: LegalityFile;
   legalities: {
       skLembaga: boolean;
       skLembagaFile: LegalityFile;

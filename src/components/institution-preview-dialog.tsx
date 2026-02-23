@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import type { Institution } from '@/lib/types';
 import { format } from 'date-fns';
-import { FileText, Building, User, Phone, Home, Link, Users } from 'lucide-react';
+import { FileText, Building, User, Phone, Home, Link, Users, Image as ImageIcon } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 
 type InstitutionPreviewDialogProps = {
@@ -80,6 +80,32 @@ export function InstitutionPreviewDialog({ institution, isOpen, onOpenChange }: 
                           <p className="text-muted-foreground">{institution.proposerPhoneNumber}</p>
                       </div>
                   </div>
+              </div>
+            </div>
+
+            {/* Informasi Usulan */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-primary flex items-center gap-2"><FileText /> Informasi Usulan</h4>
+              <div className="p-4 border rounded-lg space-y-4">
+                  <div>
+                      <p className="font-medium">Keterangan Usulan</p>
+                      <p className="text-muted-foreground text-sm mt-1">{institution.proposalDescription}</p>
+                  </div>
+
+                  {institution.activityPhoto && (
+                      <div>
+                          <p className="font-medium">Foto Plang / Kegiatan</p>
+                          <div className="mt-2 rounded-lg overflow-hidden border">
+                             <a href={institution.activityPhoto.dataUrl} target="_blank" rel="noopener noreferrer">
+                                <img 
+                                    src={institution.activityPhoto.dataUrl} 
+                                    alt="Foto Kegiatan" 
+                                    className="w-full h-auto object-cover max-h-64" 
+                                />
+                             </a>
+                          </div>
+                      </div>
+                  )}
               </div>
             </div>
             

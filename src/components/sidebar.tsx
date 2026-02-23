@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -113,6 +113,12 @@ export function Sidebar() {
                         <Link href="/tentang" className="cursor-pointer">
                             <Info className="mr-2 h-4 w-4" />
                             <span>Tentang</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/informasi-versi" className="cursor-pointer">
+                            <GitBranch className="mr-2 h-4 w-4" />
+                            <span>Informasi Versi</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

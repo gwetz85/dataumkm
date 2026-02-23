@@ -5,12 +5,11 @@ import { usePathname } from 'next/navigation';
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -131,6 +130,12 @@ export function MobileHeader() {
                                             <span>Tentang</span>
                                         </Link>
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/informasi-versi" className="cursor-pointer" onClick={() => setOpen(false)}>
+                                            <GitBranch className="mr-2 h-4 w-4" />
+                                            <span>Informasi Versi</span>
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => { logout(); setOpen(false); }} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
                                         <LogOut className="mr-2 h-4 w-4" />
@@ -180,6 +185,12 @@ export function MobileHeader() {
                         <Link href="/tentang" className="cursor-pointer">
                             <Info className="mr-2 h-4 w-4" />
                             <span>Tentang</span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/informasi-versi" className="cursor-pointer">
+                            <GitBranch className="mr-2 h-4 w-4" />
+                            <span>Informasi Versi</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

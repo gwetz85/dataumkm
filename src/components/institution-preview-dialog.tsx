@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import type { Institution } from '@/lib/types';
 import { format } from 'date-fns';
-import { FileText, Building, User, Phone, Home, Link, Users, Image as ImageIcon } from 'lucide-react';
+import { FileText, Building, User, Phone, Home, Link, Users, Edit } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 
 type InstitutionPreviewDialogProps = {
@@ -24,14 +24,13 @@ type InstitutionPreviewDialogProps = {
 export function InstitutionPreviewDialog({ institution, isOpen, onOpenChange }: InstitutionPreviewDialogProps) {
   if (!institution) return null;
 
-  const legalities = Object.entries(institution.legalities)
-    .filter(([key, value]) => key.endsWith('File') && value)
-    // @ts-ignore
-    .map(([key, value]) => ({ 
-        name: key.replace('File', '').replace(/([A-Z])/g, ' $1').replace('npwp', 'NPWP').trim(), 
-        // @ts-ignore
-        file: value as { name: string; type: string; dataUrl: string; }
-    }));
+  const allFiles = [
+    ...(institution.activityPhoto ? [{name: 'Foto Kegiatan / Plang', file: institution.activityPhoto}] : []),
+    ...(institution.legalities.skLembagaFile ? [{name: 'SK Lembaga', file: institution.legalities.skLembagaFile}] : []),
+    ...(institution.legalities.skKemenkumhamFile ? [{name: 'Akte Kemenkumham / SK Kemenag', file: institution.legalities.skKemenkumhamFile}] : []),
+    ...(institution.legalities.npwpLembagaFile ? [{name: 'NPWP Lembaga', file: institution.legalities.npwpLembagaFile}] : []),
+    ...(institution.legalities.suratDomisiliFile ? [{name: 'Surat Domisili', file: institution.legalities.suratDomisiliFile}] : []),
+  ]
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -48,10 +47,24 @@ export function InstitutionPreviewDialog({ institution, isOpen, onOpenChange }: 
         
         <ScrollArea className="max-h-[60vh] pr-6">
           <div className="space-y-6">
-            {/* Informasi Umum */}
+            {/* Data Pengajuan & Lembaga */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-primary flex items-center gap-2"><User /> Informasi Pengusul & Lembaga</h4>
+              <h4 className="font-semibold text-primary flex items-center gap-2"><User />Data Pengajuan & Lembaga</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 text-sm p-4 border rounded-lg">
+                  <div className="flex items-start gap-3">
+                      <User className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
+                      <div>
+                          <p className="font-medium">Nama Koordinator</p>
+                          <p className="text-muted-foreground">{institution.proposerName}</p>
+                      </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                      <Phone className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
+                      <div>
+                          <p className="font-medium">Kontak Koordinator</p>
+                          <p className="text-muted-foreground">{institution.proposerPhoneNumber}</p>
+                      </div>
+                  </div>
                   <div className="flex items-start gap-3">
                       <Building className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
                       <div>
@@ -59,62 +72,29 @@ export function InstitutionPreviewDialog({ institution, isOpen, onOpenChange }: 
                           <p className="text-muted-foreground">{institution.institutionName}</p>
                       </div>
                   </div>
-                  <div className="flex items-start gap-3">
+                   <div className="flex items-start gap-3">
                       <Home className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
                       <div>
                           <p className="font-medium">Alamat Lembaga</p>
                           <p className="text-muted-foreground">{institution.institutionAddress}</p>
                       </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                      <User className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
+                  <div className="flex items-start gap-3 sm:col-span-2">
+                      <Edit className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
                       <div>
-                          <p className="font-medium">Nama Pengusul</p>
-                          <p className="text-muted-foreground">{institution.proposerName}</p>
-                      </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                      <Phone className="w-4 h-4 mt-1 flex-shrink-0 text-muted-foreground" />
-                      <div>
-                          <p className="font-medium">No. Ponsel Pengusul</p>
-                          <p className="text-muted-foreground">{institution.proposerPhoneNumber}</p>
+                          <p className="font-medium">Usulan yang diajukan</p>
+                          <p className="text-muted-foreground">{institution.proposalDescription}</p>
                       </div>
                   </div>
               </div>
             </div>
 
-            {/* Informasi Usulan */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-primary flex items-center gap-2"><FileText /> Informasi Usulan</h4>
-              <div className="p-4 border rounded-lg space-y-4">
-                  <div>
-                      <p className="font-medium">Keterangan Usulan</p>
-                      <p className="text-muted-foreground text-sm mt-1">{institution.proposalDescription}</p>
-                  </div>
-
-                  {institution.activityPhoto && (
-                      <div>
-                          <p className="font-medium">Foto Plang / Kegiatan</p>
-                          <div className="mt-2 rounded-lg overflow-hidden border">
-                             <a href={institution.activityPhoto.dataUrl} target="_blank" rel="noopener noreferrer">
-                                <img 
-                                    src={institution.activityPhoto.dataUrl} 
-                                    alt="Foto Kegiatan" 
-                                    className="w-full h-auto object-cover max-h-64" 
-                                />
-                             </a>
-                          </div>
-                      </div>
-                  )}
-              </div>
-            </div>
-            
-            {/* Legalitas */}
-            {legalities.length > 0 && (
+            {/* Berkas */}
+            {allFiles.length > 0 && (
               <div className="space-y-3">
-                <h4 className="font-semibold text-primary flex items-center gap-2"><FileText /> Dokumen Legalitas</h4>
+                <h4 className="font-semibold text-primary flex items-center gap-2"><FileText /> Upload Berkas</h4>
                 <div className="p-4 border rounded-lg space-y-2">
-                  {legalities.map(({ name, file }) => (
+                  {allFiles.map(({ name, file }) => (
                     <div key={name} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
                       <p className="font-medium text-sm">{name}</p>
                       <Button variant="outline" size="sm" asChild>
@@ -129,17 +109,27 @@ export function InstitutionPreviewDialog({ institution, isOpen, onOpenChange }: 
               </div>
             )}
 
-            {/* Pengurus */}
+            {/* Penanggung Jawab */}
             {institution.boardMembers.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-primary flex items-center gap-2"><Users /> Data Pengurus</h4>
+                  <h4 className="font-semibold text-primary flex items-center gap-2"><Users /> Penanggung Jawab</h4>
                   <div className="space-y-4">
                     {institution.boardMembers.map((member, index) => (
                       <div key={index} className="p-4 border rounded-md">
-                          <p className="font-semibold mb-2">{member.name} - <span className="font-normal text-muted-foreground">{member.position}</span></p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                              <p><strong className="text-card-foreground font-medium">NIK:</strong> {member.nik}</p>
-                              <p><strong className="text-card-foreground font-medium">No. HP:</strong> {member.phoneNumber}</p>
+                          <p className="font-semibold mb-2">{member.name} - <span className="font-normal text-muted-foreground">{member.tenure}</span></p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                            <div>
+                                <p className="font-medium text-foreground">Kontak</p>
+                                <p>{member.phoneNumber}</p>
+                            </div>
+                             <div>
+                                <p className="font-medium text-foreground">NIK</p>
+                                <p>{member.nik}</p>
+                            </div>
+                            <div className="sm:col-span-2">
+                                <p className="font-medium text-foreground">Alamat</p>
+                                <p>{member.address}</p>
+                            </div>
                           </div>
                       </div>
                     ))}

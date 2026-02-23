@@ -15,9 +15,10 @@ export type Entrepreneur = {
 
 export type BoardMember = {
   name: string;
-  nik: string;
   phoneNumber: string;
-  position: string;
+  nik: string;
+  address: string;
+  tenure: string;
 };
 
 export type LegalityFile = {

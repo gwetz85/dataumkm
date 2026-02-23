@@ -4,20 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import {
-  Briefcase,
-  Home,
-  Phone,
   User,
+  Phone,
   Send,
   Building,
-  Library,
-  Trash2,
-  PlusCircle,
+  Home,
   FileText,
+  Upload,
+  PlusCircle,
+  Trash2,
   Users,
   X,
-  Upload,
-  Image as ImageIcon,
 } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -34,9 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Checkbox } from '@/components/ui/checkbox';
-import type { LegalityFile } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import type { Institution } from '@/lib/types';
 
 
 const fileSchema = z.object({
@@ -45,93 +40,61 @@ const fileSchema = z.object({
   dataUrl: z.string(),
 }).nullable().optional();
 
-const legalitySchema = z.object({
-    skLembaga: z.boolean().default(false),
-    skLembagaFile: fileSchema,
-    skKemenkumham: z.boolean().default(false),
-    skKemenkumhamFile: fileSchema,
-    npwpLembaga: z.boolean().default(false),
-    npwpLembagaFile: fileSchema,
-    skKemenag: z.boolean().default(false),
-    skKemenagFile: fileSchema,
-    suratDomisili: z.boolean().default(false),
-    suratDomisiliFile: fileSchema,
-}).refine(data => !data.skLembaga || !!data.skLembagaFile, {
-    message: "Berkas SK Lembaga wajib di-upload.",
-    path: ["skLembagaFile"],
-}).refine(data => !data.skKemenkumham || !!data.skKemenkumhamFile, {
-    message: "Berkas SK Kemenkumham wajib di-upload.",
-    path: ["skKemenkumhamFile"],
-}).refine(data => !data.npwpLembaga || !!data.npwpLembagaFile, {
-    message: "Berkas NPWP Lembaga wajib di-upload.",
-    path: ["npwpLembagaFile"],
-}).refine(data => !data.skKemenag || !!data.skKemenagFile, {
-    message: "Berkas SK Kemenag wajib di-upload.",
-    path: ["skKemenagFile"],
-}).refine(data => !data.suratDomisili || !!data.suratDomisiliFile, {
-    message: "Berkas Surat Domisili wajib di-upload.",
-    path: ["suratDomisiliFile"],
-});
-
-
 const formSchema = z.object({
-  proposerName: z.string().min(2, { message: 'Nama pengusul wajib diisi.' }),
-  proposerPhoneNumber: z.string().min(10, { message: 'Masukkan nomor ponsel yang valid.' }),
-  institutionName: z.string().min(2, { message: 'Nama lembaga wajib diisi.' }),
-  institutionAddress: z.string().min(10, { message: 'Alamat lembaga wajib diisi.' }),
-  proposalDescription: z.string().min(10, { message: 'Keterangan usulan wajib diisi.' }),
-  activityPhoto: fileSchema.refine(file => file, { message: "Foto plang/kegiatan wajib di-upload." }),
-  legalities: legalitySchema,
+  proposerName: z.string().min(2, { message: 'Nama Koordinator wajib diisi.' }),
+  proposerPhoneNumber: z.string().min(10, { message: 'Kontak Koordinator tidak valid.' }),
+  institutionName: z.string().min(2, { message: 'Nama Lembaga wajib diisi.' }),
+  institutionAddress: z.string().min(10, { message: 'Alamat Lembaga wajib diisi.' }),
+  proposalDescription: z.string().min(10, { message: 'Usulan yang diajukan wajib diisi.' }),
+  
+  skLembagaFile: fileSchema,
+  kemenkumhamOrKemenagFile: fileSchema,
+  npwpLembagaFile: fileSchema,
+  suratDomisiliFile: fileSchema,
+  activityPhoto: fileSchema.refine(file => file, { message: "Foto kegiatan/plang wajib di-upload." }),
+
   boardMembers: z.array(z.object({
-      name: z.string().min(2, "Nama pengurus wajib diisi."),
-      nik: z.string().length(16, "NIK harus 16 digit."),
+      name: z.string().min(2, "Nama wajib diisi."),
       phoneNumber: z.string().min(10, "Nomor ponsel tidak valid."),
-      position: z.string().min(2, "Jabatan wajib diisi."),
-  })).min(1, "Minimal harus ada satu pengurus."),
+      nik: z.string().length(16, "NIK harus 16 digit."),
+      address: z.string().min(10, "Alamat lengkap wajib diisi."),
+      tenure: z.string().min(1, "Lama menjabat wajib diisi."),
+  })).min(1, "Minimal harus ada satu penanggung jawab."),
 });
 
 type InstitutionFormValues = z.infer<typeof formSchema>;
 
 type InstitutionFormProps = {
-  onFormSubmit: (data: InstitutionFormValues) => void;
-  initialData?: Partial<InstitutionFormValues> | null;
+  onFormSubmit: (data: Omit<Institution, 'id' | 'registrationDate' | 'barcode'>) => void;
+  initialData?: Partial<Institution> | null;
   isEdit?: boolean;
 };
 
-const legalityFields = [
-    { id: 'skLembaga', label: 'SK Lembaga' },
-    { id: 'skKemenkumham', label: 'SK Kemenkumham' },
-    { id: 'npwpLembaga', label: 'NPWP Lembaga' },
-    { id: 'skKemenag', label: 'SK Kemenag' },
-    { id: 'suratDomisili', label: 'Surat Domisili' },
+const fileFields = [
+    { name: 'skLembagaFile', label: 'SK Lembaga' },
+    { name: 'kemenkumhamOrKemenagFile', label: 'Akte Kemenkumham / SK Kemenag' },
+    { name: 'npwpLembagaFile', label: 'NPWP Lembaga' },
+    { name: 'suratDomisiliFile', label: 'Surat Domisili' },
+    { name: 'activityPhoto', label: 'Foto Kegiatan / Plang Lembaga' },
 ] as const;
-
 
 export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: InstitutionFormProps) {
   const { toast } = useToast();
 
   const form = useForm<InstitutionFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: {
         proposerName: '',
         proposerPhoneNumber: '',
         institutionName: '',
         institutionAddress: '',
         proposalDescription: '',
         activityPhoto: null,
-        legalities: {
-            skLembaga: false,
-            skLembagaFile: null,
-            skKemenkumham: false,
-            skKemenkumhamFile: null,
-            npwpLembaga: false,
-            npwpLembagaFile: null,
-            skKemenag: false,
-            skKemenagFile: null,
-            suratDomisili: false,
-            suratDomisiliFile: null,
-        },
-        boardMembers: [{name: '', nik: '', phoneNumber: '', position: ''}]
+        skLembagaFile: null,
+        kemenkumhamOrKemenagFile: null,
+        npwpLembagaFile: null,
+        suratDomisiliFile: null,
+        boardMembers: [{name: '', nik: '', phoneNumber: '', address: '', tenure: ''}]
     },
   });
 
@@ -142,37 +105,50 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
 
   React.useEffect(() => {
     if (initialData) {
-      form.reset(initialData);
-    } else if (!isEdit) {
       form.reset({
-        proposerName: '',
-        proposerPhoneNumber: '',
-        institutionName: '',
-        institutionAddress: '',
-        proposalDescription: '',
-        activityPhoto: null,
-        legalities: {
-            skLembaga: false,
-            skLembagaFile: null,
-            skKemenkumham: false,
-            skKemenkumhamFile: null,
-            npwpLembaga: false,
-            npwpLembagaFile: null,
-            skKemenag: false,
-            skKemenagFile: null,
-            suratDomisili: false,
-            suratDomisiliFile: null,
-        },
-        boardMembers: [{name: '', nik: '', phoneNumber: '', position: ''}]
+        proposerName: initialData.proposerName,
+        proposerPhoneNumber: initialData.proposerPhoneNumber,
+        institutionName: initialData.institutionName,
+        institutionAddress: initialData.institutionAddress,
+        proposalDescription: initialData.proposalDescription,
+        activityPhoto: initialData.activityPhoto,
+        boardMembers: initialData.boardMembers?.length ? initialData.boardMembers : [{name: '', nik: '', phoneNumber: '', address: '', tenure: ''}],
+        skLembagaFile: initialData.legalities?.skLembagaFile,
+        kemenkumhamOrKemenagFile: initialData.legalities?.skKemenkumhamFile,
+        npwpLembagaFile: initialData.legalities?.npwpLembagaFile,
+        suratDomisiliFile: initialData.legalities?.suratDomisiliFile,
       });
+    } else if (!isEdit) {
+      form.reset();
     }
   }, [initialData, isEdit, form]);
 
-  const { watch } = form;
   const { isSubmitting } = form.formState;
 
   function onSubmit(values: InstitutionFormValues) {
-    onFormSubmit(values);
+    const dataToSubmit = {
+        proposerName: values.proposerName,
+        proposerPhoneNumber: values.proposerPhoneNumber,
+        institutionName: values.institutionName,
+        institutionAddress: values.institutionAddress,
+        proposalDescription: values.proposalDescription,
+        activityPhoto: values.activityPhoto,
+        legalities: {
+            skLembaga: !!values.skLembagaFile,
+            skLembagaFile: values.skLembagaFile,
+            skKemenkumham: !!values.kemenkumhamOrKemenagFile,
+            skKemenkumhamFile: values.kemenkumhamOrKemenagFile,
+            npwpLembaga: !!values.npwpLembagaFile,
+            npwpLembagaFile: values.npwpLembagaFile,
+            suratDomisili: !!values.suratDomisiliFile,
+            suratDomisiliFile: values.suratDomisiliFile,
+            skKemenag: false,
+            skKemenagFile: null
+        },
+        boardMembers: values.boardMembers,
+    };
+
+    onFormSubmit(dataToSubmit);
     toast({
       title: isEdit ? 'Berhasil Diperbarui!' : 'Berhasil!',
       description: `Data untuk ${values.institutionName} telah ${isEdit ? 'diperbarui' : 'ditambahkan'}.`,
@@ -181,14 +157,14 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
       form.reset();
     }
   }
-
-  const handleFileChange = (fieldName: keyof z.infer<typeof legalitySchema>, e: React.ChangeEvent<HTMLInputElement>) => {
+  
+  const handleFileChange = (fieldName: keyof InstitutionFormValues, e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
           const reader = new FileReader();
           reader.onload = (loadEvent) => {
               const dataUrl = loadEvent.target?.result as string;
-              form.setValue(`legalities.${fieldName}`, {
+              form.setValue(fieldName, {
                   name: file.name,
                   type: file.type,
                   dataUrl: dataUrl,
@@ -198,58 +174,39 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
       }
   };
 
-  const handleSingleFileChange = (fieldName: 'activityPhoto', e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (loadEvent) => {
-            const dataUrl = loadEvent.target?.result as string;
-            form.setValue(fieldName, {
-                name: file.name,
-                type: file.type,
-                dataUrl: dataUrl,
-            }, { shouldValidate: true });
-        };
-        reader.readAsDataURL(file);
-    }
-  }
-
-  const LegalityUploader = ({ fieldName, label }: { fieldName: keyof z.infer<typeof legalitySchema>, label: string }) => {
-      const isChecked = watch(`legalities.${fieldName.replace('File', '') as 'skLembaga'}`);
-      const file = watch(`legalities.${fieldName}`);
-
-      if (!isChecked) return null;
-
+  const FileUploader = ({ fieldName, label }: { fieldName: keyof InstitutionFormValues, label: string }) => {
+      const file = form.watch(fieldName);
       return (
-        <FormItem className="mt-2 p-3 border rounded-md">
-            <FormLabel>{label}</FormLabel>
-            {file ? (
-                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                        <FileText className="w-4 h-4 text-muted-foreground"/>
-                        <span className="truncate max-w-xs">{file.name}</span>
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => form.setValue(`legalities.${fieldName}`, null, { shouldValidate: true })}>
-                        <X className="w-4 h-4" />
-                    </Button>
-                </div>
-            ) : (
-                <FormControl>
-                    <div className="relative">
-                        <Upload className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                            type="file" 
-                            onChange={(e) => handleFileChange(fieldName, e)} 
-                            accept="application/pdf,image/*" 
-                            className="pl-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                        />
-                    </div>
-                </FormControl>
-            )}
-            <FormMessage />
-        </FormItem>
+          <FormItem>
+              <FormLabel>{label}</FormLabel>
+              {file ? (
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                          <FileText className="w-4 h-4 text-muted-foreground"/>
+                          <span className="truncate max-w-xs">{file.name}</span>
+                      </div>
+                      <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => form.setValue(fieldName, null, { shouldValidate: true })}>
+                          <X className="w-4 h-4" />
+                      </Button>
+                  </div>
+              ) : (
+                  <FormControl>
+                      <div className="relative">
+                          <Upload className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                              type="file" 
+                              onChange={(e) => handleFileChange(fieldName, e)} 
+                              accept="application/pdf,image/*" 
+                              className="pl-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                          />
+                      </div>
+                  </FormControl>
+              )}
+              <FormMessage />
+          </FormItem>
       )
-  }
+  };
+
 
   return (
     <Card className="max-w-4xl mx-auto shadow-lg border-none bg-card/80">
@@ -258,146 +215,90 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
             <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Building /> Informasi Pengusul & Lembaga</h3>
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><User /> Data Pengajuan</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <FormField control={form.control} name="proposerName" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm"><User/> Nama Pengusul</FormLabel>
+                      <FormLabel>Nama Koordinator</FormLabel>
                       <FormControl><Input placeholder="cth. Budi Santoso" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="proposerPhoneNumber" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm"><Phone/> Nomor Ponsel Pengusul</FormLabel>
+                      <FormLabel>Kontak Koordinator</FormLabel>
                       <FormControl><Input placeholder="cth. 081234567890" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                 </div>
+            </div>
+
+            <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Building /> Data Lembaga</h3>
                 <FormField control={form.control} name="institutionName" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-sm"><Building/> Nama Lembaga</FormLabel>
+                    <FormLabel>Nama Lembaga</FormLabel>
                     <FormControl><Input placeholder="cth. Yayasan Harapan Bangsa" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="institutionAddress" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center gap-2 text-sm"><Home/> Alamat Lembaga</FormLabel>
+                    <FormLabel>Alamat Lengkap Lembaga</FormLabel>
                     <FormControl><Textarea placeholder="cth. Jl. Merdeka No. 10, Bandung" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="proposalDescription" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Usulan yang diajukan</FormLabel>
+                    <FormControl><Textarea placeholder="Jelaskan secara singkat mengenai usulan lembaga..." {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
             </div>
 
             <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><FileText /> Informasi Usulan</h3>
-                <FormField
-                    control={form.control}
-                    name="proposalDescription"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><FileText/> Keterangan Usulan</FormLabel>
-                        <FormControl>
-                            <Textarea placeholder="Jelaskan secara singkat mengenai usulan lembaga..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="activityPhoto"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center gap-2 text-sm"><ImageIcon/> Foto Plang / Foto Kegiatan</FormLabel>
-                            {field.value ? (
-                                <div className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
-                                    <div className="flex items-center gap-2 text-sm font-medium">
-                                        <FileText className="w-4 h-4 text-muted-foreground"/>
-                                        <span className="truncate max-w-xs">{field.value.name}</span>
-                                    </div>
-                                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => form.setValue(`activityPhoto`, null, { shouldValidate: true })}>
-                                        <X className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            ) : (
-                                <FormControl>
-                                    <div className="relative">
-                                        <Upload className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input 
-                                            type="file" 
-                                            onChange={(e) => handleSingleFileChange('activityPhoto', e)} 
-                                            accept="image/*" 
-                                            className="pl-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                                        />
-                                    </div>
-                                </FormControl>
-                            )}
-                             <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </div>
-
-            <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Library /> Legalitas Lembaga</h3>
-                <FormDescription>Pilih dokumen yang tersedia dan upload berkasnya.</FormDescription>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-                    {legalityFields.map(item => (
-                        <div key={item.id}>
-                            <FormField
-                                control={form.control}
-                                name={`legalities.${item.id}`}
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                        <FormControl>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={(checked) => {
-                                                    field.onChange(checked)
-                                                    if(!checked) {
-                                                        form.setValue(`legalities.${item.id}File` as any, null);
-                                                    }
-                                                }}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="font-normal">{item.label}</FormLabel>
-                                    </FormItem>
-                                )}
-                            />
-                             <FormField
-                                control={form.control}
-                                name={`legalities.${item.id}File` as any}
-                                render={() => (
-                                    <LegalityUploader fieldName={`${item.id}File` as any} label={`Upload ${item.label}`} />
-                                )}
-                            />
-                        </div>
-                    ))}
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Upload /> Upload Berkas</h3>
+                <FormDescription>Upload dokumen dalam format PDF atau gambar.</FormDescription>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {fileFields.map(field => (
+                     <FormField
+                        key={field.name}
+                        control={form.control}
+                        name={field.name}
+                        render={() => (
+                           <FileUploader fieldName={field.name} label={field.label} />
+                        )}
+                    />
+                  ))}
                 </div>
             </div>
 
             <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Users /> Data Pengurus</h3>
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Users /> Penanggung Jawab</h3>
                 {fields.map((field, index) => (
                     <div key={field.id} className="p-4 border rounded-md relative space-y-4">
-                        <p className="font-medium">Pengurus {index + 1}</p>
+                        <p className="font-medium">Penanggung Jawab {index + 1}</p>
                         <div className="grid md:grid-cols-2 gap-4">
                              <FormField control={form.control} name={`boardMembers.${index}.name`} render={({ field }) => (
                                 <FormItem><FormLabel>Nama</FormLabel><FormControl><Input placeholder="Nama Lengkap" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField control={form.control} name={`boardMembers.${index}.nik`} render={({ field }) => (
-                                <FormItem><FormLabel>NIK</FormLabel><FormControl><Input placeholder="16 digit NIK" {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
                             <FormField control={form.control} name={`boardMembers.${index}.phoneNumber`} render={({ field }) => (
                                 <FormItem><FormLabel>Nomor Ponsel</FormLabel><FormControl><Input placeholder="08..." {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                             <FormField control={form.control} name={`boardMembers.${index}.position`} render={({ field }) => (
-                                <FormItem><FormLabel>Jabatan</FormLabel><FormControl><Input placeholder="Ketua, Bendahara, dll." {...field} /></FormControl><FormMessage /></FormItem>
+                             <FormField control={form.control} name={`boardMembers.${index}.nik`} render={({ field }) => (
+                                <FormItem><FormLabel>NIK</FormLabel><FormControl><Input placeholder="16 digit NIK" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
+                            <FormField control={form.control} name={`boardMembers.${index}.tenure`} render={({ field }) => (
+                                <FormItem><FormLabel>Lama Menjabat</FormLabel><FormControl><Input placeholder="cth. 2 Tahun" {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <div className="md:col-span-2">
+                              <FormField control={form.control} name={`boardMembers.${index}.address`} render={({ field }) => (
+                                  <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Textarea placeholder="Alamat lengkap penanggung jawab" {...field} /></FormControl><FormMessage /></FormItem>
+                              )} />
+                            </div>
                         </div>
                         {fields.length > 1 && (
                             <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)} className="absolute -top-3 -right-3 h-7 w-7 p-0 rounded-full">
@@ -406,9 +307,9 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
                         )}
                     </div>
                 ))}
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', nik: '', phoneNumber: '', position: '' })}>
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', nik: '', phoneNumber: '', address: '', tenure: '' })}>
                     <PlusCircle className="mr-2 h-4 w-4" />
-                    Tambah Pengurus
+                    Tambah Penanggung Jawab
                 </Button>
                  <FormMessage>{form.formState.errors.boardMembers?.message}</FormMessage>
             </div>

@@ -119,37 +119,37 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
           { title: 'Nama Pengusul', data: item.proposerName },
           { title: 'No. Ponsel Pengusul', data: item.proposerPhoneNumber },
           { title: 'Tanggal Registrasi', data: format(new Date(item.registrationDate), 'dd MMMM yyyy') },
+          { title: 'Usulan Diajukan', data: item.proposalDescription }
       ];
 
       (doc as any).autoTable({
           startY: 30,
           theme: 'grid',
-          head: [['Informasi Umum', '']],
+          head: [['Informasi Umum & Usulan', '']],
           body: generalData.map(d => [d.title, d.data]),
       });
 
-      const legalities = Object.entries(item.legalities)
-        .filter(([key, value]) => key.endsWith('File') && value)
-        .map(([key, value]) => ({ 
-            name: key.replace('File', '').replace(/([A-Z])/g, ' $1').replace('npwp', 'NPWP').trim(), 
-            // @ts-ignore
-            fileName: value?.name || 'File terlampir'
-        }));
+      const allFiles = [
+        ...(item.activityPhoto ? [{name: 'Foto Kegiatan / Plang', file: item.activityPhoto}] : []),
+        ...(item.legalities.skLembagaFile ? [{name: 'SK Lembaga', file: item.legalities.skLembagaFile}] : []),
+        ...(item.legalities.skKemenkumhamFile ? [{name: 'Akte Kemenkumham / SK Kemenag', file: item.legalities.skKemenkumhamFile}] : []),
+        ...(item.legalities.npwpLembagaFile ? [{name: 'NPWP Lembaga', file: item.legalities.npwpLembagaFile}] : []),
+        ...(item.legalities.suratDomisiliFile ? [{name: 'Surat Domisili', file: item.legalities.suratDomisiliFile}] : []),
+      ]
       
-      if(legalities.length > 0) {
+      if(allFiles.length > 0) {
         (doc as any).autoTable({
             theme: 'striped',
-            head: [['Legalitas', 'Nama File']],
-            body: legalities.map(l => [l.name, l.fileName]),
+            head: [['Berkas Terlampir', 'Nama File']],
+            body: allFiles.map(f => [f.name, f.file.name]),
         });
       }
-
 
       if(item.boardMembers.length > 0) {
         (doc as any).autoTable({
             theme: 'striped',
-            head: [['Nama Pengurus', 'NIK', 'Jabatan', 'No. Ponsel']],
-            body: item.boardMembers.map(m => [m.name, m.nik, m.position, m.phoneNumber]),
+            head: [['Nama', 'Nomor Ponsel', 'NIK', 'Alamat Lengkap', 'Lama Menjabat']],
+            body: item.boardMembers.map(m => [m.name, m.phoneNumber, m.nik, m.address, m.tenure]),
         });
       }
       
@@ -189,7 +189,7 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
                   <TableHead>Kode Verifikasi</TableHead>
                   <TableHead>Nama Pengusul</TableHead>
                   <TableHead>Jumlah Pengurus</TableHead>
-                  <TableHead>Jumlah Legalitas</TableHead>
+                  <TableHead>Jumlah Berkas</TableHead>
                   <TableHead>Terdaftar</TableHead>
                   <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
@@ -197,14 +197,17 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
               <TableBody>
                 {filteredData.length > 0 ? (
                   filteredData.map((item) => {
-                    const legalitiesCount = Object.values(item.legalities).filter(val => typeof val === 'object' && val !== null).length;
+                    const legalitiesCount = Object.values(item.legalities).filter(val => val === true).length;
+                    const photoCount = item.activityPhoto ? 1 : 0;
+                    const totalFiles = legalitiesCount + photoCount;
+                    
                     return (
                       <TableRow key={item.id} className="hover:bg-muted/20">
                           <TableCell className="font-medium">{item.institutionName}</TableCell>
                           <TableCell className="font-mono">{item.barcode}</TableCell>
                           <TableCell>{item.proposerName}</TableCell>
                           <TableCell>{item.boardMembers.length}</TableCell>
-                          <TableCell>{legalitiesCount}</TableCell>
+                          <TableCell>{totalFiles}</TableCell>
                           <TableCell>{format(new Date(item.registrationDate), 'dd MMM yyyy')}</TableCell>
                           <TableCell className="text-right">
                           <DropdownMenu>

@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Search, Download, Printer, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Search, Download, Printer, MoreHorizontal, Pencil, Trash2, Eye } from 'lucide-react';
 import type { Institution } from '@/lib/types';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -39,6 +39,7 @@ import { useInstitution } from '@/context/InstitutionContext';
 import { useAuth } from '@/context/AuthContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { InstitutionPreviewDialog } from './institution-preview-dialog';
 
 
 type InstitutionDataTableProps = {
@@ -49,6 +50,8 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
   const { deleteInstitution } = useInstitution();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedInstitution, setSelectedInstitution] = React.useState<Institution | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   
   const filteredData = React.useMemo(() => {
     return data.filter((item) => {
@@ -59,6 +62,11 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
              item.institutionAddress.toLowerCase().includes(searchLower);
     });
   }, [data, searchTerm]);
+
+  const handlePreview = (item: Institution) => {
+    setSelectedInstitution(item);
+    setIsPreviewOpen(true);
+  };
   
   const addVerifierFooter = (doc: jsPDF) => {
       const pageCount = (doc as any).internal.getNumberOfPages();
@@ -151,113 +159,124 @@ export function InstitutionDataTable({ data }: InstitutionDataTableProps) {
   };
 
   return (
-    <Card className="shadow-lg border-none bg-card/80">
-      <CardHeader className="border-b">
-        <div className="flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Cari berdasarkan nama lembaga, pengusul, kode, atau alamat..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full bg-background"
-            />
+    <>
+      <Card className="shadow-lg border-none bg-card/80">
+        <CardHeader className="border-b">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Cari berdasarkan nama lembaga, pengusul, kode, atau alamat..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full bg-background"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handlePrintAll} variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export PDF
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={handlePrintAll} variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export PDF
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50">
-                <TableHead>Nama Lembaga</TableHead>
-                <TableHead>Kode Verifikasi</TableHead>
-                <TableHead>Nama Pengusul</TableHead>
-                <TableHead>Jumlah Pengurus</TableHead>
-                <TableHead>Jumlah Legalitas</TableHead>
-                <TableHead>Terdaftar</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.length > 0 ? (
-                filteredData.map((item) => {
-                  const legalitiesCount = Object.values(item.legalities).filter(val => typeof val === 'object' && val !== null).length;
-                  return (
-                    <TableRow key={item.id} className="hover:bg-muted/20">
-                        <TableCell className="font-medium">{item.institutionName}</TableCell>
-                        <TableCell className="font-mono">{item.barcode}</TableCell>
-                        <TableCell>{item.proposerName}</TableCell>
-                        <TableCell>{item.boardMembers.length}</TableCell>
-                        <TableCell>{legalitiesCount}</TableCell>
-                        <TableCell>{format(new Date(item.registrationDate), 'dd MMM yyyy')}</TableCell>
-                        <TableCell className="text-right">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Buka menu</span>
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                                <DropdownMenuItem asChild>
-                                    <Link href={`/input-lembaga?id=${item.id}`} className="cursor-pointer">
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    <span>Edit</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="cursor-pointer">
-                                    <Printer className="mr-2 h-4 w-4" />
-                                    <span>Cetak</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            <span>Hapus</span>
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Tindakan ini tidak bisa dibatalkan. Ini akan menghapus data untuk <span className="font-bold">{item.institutionName}</span> secara permanen.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Batal</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => deleteInstitution(item.id)} className="bg-destructive hover:bg-destructive/90">
-                                                Hapus
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center h-48">
-                     <p className="text-lg text-muted-foreground">Tidak ada data lembaga yang tersedia.</p>
-                     <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data lembaga baru.</p>
-                  </TableCell>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Nama Lembaga</TableHead>
+                  <TableHead>Kode Verifikasi</TableHead>
+                  <TableHead>Nama Pengusul</TableHead>
+                  <TableHead>Jumlah Pengurus</TableHead>
+                  <TableHead>Jumlah Legalitas</TableHead>
+                  <TableHead>Terdaftar</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+              </TableHeader>
+              <TableBody>
+                {filteredData.length > 0 ? (
+                  filteredData.map((item) => {
+                    const legalitiesCount = Object.values(item.legalities).filter(val => typeof val === 'object' && val !== null).length;
+                    return (
+                      <TableRow key={item.id} className="hover:bg-muted/20">
+                          <TableCell className="font-medium">{item.institutionName}</TableCell>
+                          <TableCell className="font-mono">{item.barcode}</TableCell>
+                          <TableCell>{item.proposerName}</TableCell>
+                          <TableCell>{item.boardMembers.length}</TableCell>
+                          <TableCell>{legalitiesCount}</TableCell>
+                          <TableCell>{format(new Date(item.registrationDate), 'dd MMM yyyy')}</TableCell>
+                          <TableCell className="text-right">
+                          <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" className="h-8 w-8 p-0">
+                                      <span className="sr-only">Buka menu</span>
+                                      <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                                  <DropdownMenuItem onClick={() => handlePreview(item)} className="cursor-pointer">
+                                      <Eye className="mr-2 h-4 w-4" />
+                                      <span>Lihat Detail</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem asChild>
+                                      <Link href={`/input-lembaga?id=${item.id}`} className="cursor-pointer">
+                                      <Pencil className="mr-2 h-4 w-4" />
+                                      <span>Edit</span>
+                                      </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="cursor-pointer">
+                                      <Printer className="mr-2 h-4 w-4" />
+                                      <span>Cetak</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                                              <Trash2 className="mr-2 h-4 w-4" />
+                                              <span>Hapus</span>
+                                          </DropdownMenuItem>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                          <AlertDialogHeader>
+                                              <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
+                                              <AlertDialogDescription>
+                                                  Tindakan ini tidak bisa dibatalkan. Ini akan menghapus data untuk <span className="font-bold">{item.institutionName}</span> secara permanen.
+                                              </AlertDialogDescription>
+                                          </AlertDialogHeader>
+                                          <AlertDialogFooter>
+                                              <AlertDialogCancel>Batal</AlertDialogCancel>
+                                              <AlertDialogAction onClick={() => deleteInstitution(item.id)} className="bg-destructive hover:bg-destructive/90">
+                                                  Hapus
+                                              </AlertDialogAction>
+                                          </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                  </AlertDialog>
+                              </DropdownMenuContent>
+                          </DropdownMenu>
+                          </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center h-48">
+                      <p className="text-lg text-muted-foreground">Tidak ada data lembaga yang tersedia.</p>
+                      <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data lembaga baru.</p>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+      <InstitutionPreviewDialog
+        institution={selectedInstitution}
+        isOpen={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+      />
+    </>
   );
 }

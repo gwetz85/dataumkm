@@ -6,6 +6,8 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
 import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User } from 'lucide-react';
@@ -76,14 +78,16 @@ export function MobileHeader() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="sm:max-w-xs p-0 flex flex-col">
-                    <div className="flex items-center gap-3 h-20 px-6 border-b">
+                    <SheetHeader className="flex-row items-center gap-3 h-20 px-6 border-b space-y-0">
                         <div className="bg-primary p-3 rounded-xl shadow-md">
                             <Database className="h-7 w-7 text-primary-foreground" />
                         </div>
-                        <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                            SIPDATA
-                        </h1>
-                    </div>
+                        <SheetTitle asChild>
+                            <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                                SIPDATA
+                            </h1>
+                        </SheetTitle>
+                    </SheetHeader>
                     <nav className="grid gap-1 text-lg font-medium p-4">
                         {navLinks.map(createLink)}
                         <Separator className="my-2" />

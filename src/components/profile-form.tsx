@@ -31,7 +31,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { UserProfile } from '@/context/AuthContext';
 
 const formSchema = z.object({
-  fullName: z.string().min(2, { message: 'Nama lengkap wajib diisi.' }).optional(),
+  fullName: z.string().min(2, { message: 'Nama lengkap wajib diisi.' }).optional().or(z.literal('')),
   nik: z.string().length(16, { message: 'NIK harus 16 digit.' }).optional().or(z.literal('')),
   birthPlace: z.string().optional(),
   birthDate: z.string().optional(),
@@ -59,11 +59,15 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   React.useEffect(() => {
     if (initialData) {
       form.reset(initialData);
-      // Lock the form if there is any data saved in the profile.
-      const isProfilePopulated = Object.values(initialData).some(value => !!value);
-      setIsLocked(isProfilePopulated);
+      if (Object.keys(initialData).length === 0) {
+        // This is a new profile, unlock it for the first entry.
+        setIsLocked(false);
+      } else {
+        // This is an existing profile, lock it.
+        setIsLocked(true);
+      }
     } else {
-      // If there's no initial data at all, the form should be unlocked for the first entry.
+      // This case should not happen based on AuthContext, but for safety:
       setIsLocked(false);
     }
   }, [initialData, form]);

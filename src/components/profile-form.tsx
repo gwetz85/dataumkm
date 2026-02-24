@@ -49,7 +49,13 @@ type ProfileFormProps = {
 
 export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(true);
+  
+  const [isLocked, setIsLocked] = React.useState(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      return true;
+    }
+    return false;
+  });
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
@@ -59,18 +65,8 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   React.useEffect(() => {
     if (initialData) {
       form.reset(initialData);
-      if (Object.keys(initialData).length === 0) {
-        // This is a new profile, unlock it for the first entry.
-        setIsLocked(false);
-      } else {
-        // This is an existing profile, lock it.
-        setIsLocked(true);
-      }
-    } else {
-      // This case should not happen based on AuthContext, but for safety:
-      setIsLocked(false);
     }
-  }, [initialData]);
+  }, [initialData, form.reset]);
 
   const { isSubmitting } = form.formState;
 

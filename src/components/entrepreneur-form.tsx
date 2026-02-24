@@ -59,8 +59,8 @@ const formSchema = z.object({
   kecamatan: z.string({ required_error: 'Kecamatan wajib dipilih.' }),
   businessType: z.string().min(2, { message: 'Jenis usaha wajib diisi.' }),
   businessLocation: z.string().min(2, { message: 'Lokasi usaha wajib diisi.' }),
-  accountNumber: z.string().min(5, { message: 'Nomor rekening wajib diisi.' }),
-  bankName: z.string().min(2, { message: 'Nama bank wajib diisi.' }),
+  accountNumber: z.string().min(5, { message: 'Nomor rekening minimal 5 karakter.' }).optional().or(z.literal('')),
+  bankName: z.string().min(2, { message: 'Nama bank minimal 2 karakter.' }).optional().or(z.literal('')),
   coordinator: z.string().min(2, { message: 'Nama koordinator wajib diisi.' }),
 });
 
@@ -232,17 +232,19 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
             </div>
              
             {/* Data Rekening */}
-            <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Landmark /> Data Rekening</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <FormField control={form.control} name="accountNumber" render={({ field }) => (
-                      <FormItem><FormLabel>Nomor Rekening</FormLabel><FormControl><Input placeholder="cth. 1234567890" {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField control={form.control} name="bankName" render={({ field }) => (
-                      <FormItem><FormLabel>Nama Bank</FormLabel><FormControl><Input placeholder="cth. Bank ABC" {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                </div>
-            </div>
+            {isEdit && (
+              <div className="space-y-4 p-4 border rounded-lg">
+                  <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Landmark /> Data Rekening</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="accountNumber" render={({ field }) => (
+                        <FormItem><FormLabel>Nomor Rekening</FormLabel><FormControl><Input placeholder="cth. 1234567890" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="bankName" render={({ field }) => (
+                        <FormItem><FormLabel>Nama Bank</FormLabel><FormControl><Input placeholder="cth. Bank ABC" {...field} value={field.value || ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                  </div>
+              </div>
+            )}
 
             {/* Koordinator */}
             <div className="space-y-4 p-4 border rounded-lg">

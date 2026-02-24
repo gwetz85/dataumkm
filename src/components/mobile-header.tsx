@@ -157,7 +157,7 @@ export function MobileHeader() {
         </div>
         
         <div className="flex items-center gap-2 sm:gap-4">
-            <RealTimeClock className="hidden sm:block" />
+            <RealTimeClock />
             {user && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

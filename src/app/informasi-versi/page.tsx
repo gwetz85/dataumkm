@@ -1,23 +1,15 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { GitBranch } from 'lucide-react';
 
 export default function InformasiVersiPage() {
     const updates = [
-        "Pengecekkan data bisa menggunakan NIK Dan Nomor KK.",
-        "Pengecekkan NIK akan menampilkan data dengan NIK yang sesuai.",
-        "Pengecekkan Nomor KK akan menampilkan semua data yang tersinkron dengan Nomor KK tersebut.",
-        "Pembatasan inputan data: system akan otomatis menolak apabila ada double input baik NIK maupun Nomor KK.",
-        "Update Profile untuk memberikan generated data yang sesuai di PDF print.",
-        "Semua file yang sudah di upload bisa di preview melalui Database Lembaga.",
-        "Perbaikkan Database dan Input Data UMKM , menjadi lebih lengkap",
-        "Penambahan Fitur Nomor Rekening yang hanya bisa di akses di Database UMKM",
-        "Pembatasan tampilan LOGIN",
-        "Penambahan Fitur Autosave setiap 10 menit",
-        "Penambahan fitur pembacaan Autosave system",
-        "Perbaikkan di system Profil Pengguna",
-        "Penambahan beberapa Tampilan",
+        "Perombakkan besar disisi Tampilan Aplikasi",
+        "Penambahan Fitur Waktu yang tersinkron ke database",
+        "Pencarian data lebih baik dan lebih teliti",
+        "Penambahan Fitur Auto Save untuk menghilangkan kemungkinan data hilang",
+        "Penambahan Update Command Terminal untuk menghapus data profil user",
     ];
 
     return (
@@ -25,9 +17,11 @@ export default function InformasiVersiPage() {
             <h1 className="text-3xl font-headline font-bold">Informasi Versi</h1>
             <Card className="shadow-lg border-none bg-card/80">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><GitBranch /> Catatan Pembaruan Aplikasi</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><GitBranch /> Major Update</CardTitle>
+                    <CardDescription>Versi update : 2.10.2402.2026</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-card-foreground/90">
+                    <p className="font-semibold text-foreground">Catatan Pembaruan Aplikasi:</p>
                     <ul className="list-disc space-y-3 pl-5">
                         {updates.map((update, index) => (
                             <li key={index}>
@@ -35,7 +29,7 @@ export default function InformasiVersiPage() {
                             </li>
                         ))}
                     </ul>
-                     <p className="font-semibold text-foreground pt-4">
+                     <p className="font-semibold text-foreground pt-4 mt-4 border-t">
                         Aplikasi akan terus dikembangkan untuk fitur-fitur selanjutnya.
                     </p>
                 </CardContent>

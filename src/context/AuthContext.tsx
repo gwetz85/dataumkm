@@ -75,11 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const validUser = credentials[username];
     
     if (validUser && validUser.password === password) {
-        const existingStoredUser = JSON.parse(localStorage.getItem('user') || '{}');
-        let userData = {};
-        if (existingStoredUser.username === username) {
-            userData = existingStoredUser.data || {};
-        }
+        const allProfiles = JSON.parse(localStorage.getItem('user_profiles') || '{}');
+        const userData = allProfiles[username] || {};
 
         const userToStore: User = { 
             username: username, 
@@ -107,7 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (user) {
           const updatedUser = { ...user, data: { ...user.data, ...data } };
           setUser(updatedUser);
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem('user', JSON.stringify(updatedUser)); // Update session
+
+          // Persist profile data separately
+          const allProfiles = JSON.parse(localStorage.getItem('user_profiles') || '{}');
+          allProfiles[user.username] = updatedUser.data;
+          localStorage.setItem('user_profiles', JSON.stringify(allProfiles));
       }
   };
 

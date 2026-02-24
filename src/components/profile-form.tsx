@@ -59,12 +59,11 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   React.useEffect(() => {
     if (initialData) {
       form.reset(initialData);
-      if (initialData.fullName) {
-        setIsLocked(true);
-      } else {
-        setIsLocked(false);
-      }
+      // Lock the form if there is any data saved in the profile.
+      const isProfilePopulated = Object.values(initialData).some(value => !!value);
+      setIsLocked(isProfilePopulated);
     } else {
+      // If there's no initial data at all, the form should be unlocked for the first entry.
       setIsLocked(false);
     }
   }, [initialData, form]);

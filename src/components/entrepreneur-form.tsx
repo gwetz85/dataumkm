@@ -136,7 +136,7 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
   }
 
   return (
-    <Card className="max-w-4xl mx-auto shadow-lg border-none bg-card/80">
+    <Card className="shadow-lg border-none bg-card/80">
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

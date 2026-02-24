@@ -85,7 +85,7 @@ export function MobileHeader() {
                         </div>
                         <SheetTitle asChild>
                             <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                                SIPDATA
+                                SiDATA
                             </h1>
                         </SheetTitle>
                     </SheetHeader>
@@ -151,7 +151,7 @@ export function MobileHeader() {
             </Sheet>
             <div className="flex items-center gap-3">
                 <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
-                SIPDATA
+                SiDATA
                 </h1>
             </div>
         </div>

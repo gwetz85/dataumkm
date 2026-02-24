@@ -71,7 +71,7 @@ export default function LoginPage() {
             <div className="mx-auto bg-primary p-3 rounded-xl shadow-md inline-block">
                 <Database className="h-8 w-8 text-primary-foreground" />
             </div>
-          <CardTitle className="text-2xl font-headline">SIPDATA</CardTitle>
+          <CardTitle className="text-2xl font-headline">SiDATA</CardTitle>
           <CardDescription>Sistem Informasi Data Terpadu</CardDescription>
         </CardHeader>
         <CardContent>

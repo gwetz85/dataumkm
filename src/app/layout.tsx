@@ -8,7 +8,7 @@ import AuthGuard from '@/components/AuthGuard';
 
 
 export const metadata: Metadata = {
-  title: 'SIPDATA',
+  title: 'SiDATA',
   description: 'Sistem Informasi Data Terpadu',
 };
 

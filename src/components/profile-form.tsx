@@ -11,7 +11,8 @@ import {
   Mail,
   Calendar,
   Home,
-  Save
+  Save,
+  Edit
 } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,7 @@ type ProfileFormProps = {
 
 export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   const { toast } = useToast();
+  const [isLocked, setIsLocked] = React.useState(true);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
@@ -57,6 +59,13 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   React.useEffect(() => {
     if (initialData) {
       form.reset(initialData);
+      if (initialData.fullName) {
+        setIsLocked(true);
+      } else {
+        setIsLocked(false);
+      }
+    } else {
+      setIsLocked(false);
     }
   }, [initialData, form]);
 
@@ -68,6 +77,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
       title: 'Profil Diperbarui!',
       description: `Data profil Anda telah berhasil disimpan.`,
     });
+    setIsLocked(true);
   }
 
   return (
@@ -86,7 +96,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><User className="w-4 h-4"/> Nama Lengkap</FormLabel>
                     <FormControl>
-                      <Input placeholder="cth. Budi Santoso" {...field} value={field.value || ''} />
+                      <Input placeholder="cth. Budi Santoso" {...field} value={field.value || ''} disabled={isLocked} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -99,7 +109,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><CreditCard className="w-4 h-4"/> NIK</FormLabel>
                     <FormControl>
-                      <Input placeholder="cth. 327321..." {...field} value={field.value || ''} />
+                      <Input placeholder="cth. 327321..." {...field} value={field.value || ''} disabled={isLocked} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -112,7 +122,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><Home className="w-4 h-4"/> Tempat Lahir</FormLabel>
                     <FormControl>
-                      <Input placeholder="cth. Bandung" {...field} value={field.value || ''} />
+                      <Input placeholder="cth. Bandung" {...field} value={field.value || ''} disabled={isLocked} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -125,7 +135,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><Calendar className="w-4 h-4"/> Tanggal Lahir</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} value={field.value || ''}/>
+                      <Input type="date" {...field} value={field.value || ''} disabled={isLocked}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -138,7 +148,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><Phone className="w-4 h-4"/> Nomor Ponsel</FormLabel>
                     <FormControl>
-                      <Input placeholder="cth. 081234567890" {...field} value={field.value || ''} />
+                      <Input placeholder="cth. 081234567890" {...field} value={field.value || ''} disabled={isLocked} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -151,7 +161,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2"><Mail className="w-4 h-4"/> Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="cth. budi@email.com" {...field} value={field.value || ''} />
+                      <Input placeholder="cth. budi@email.com" {...field} value={field.value || ''} disabled={isLocked} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -165,7 +175,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
                     <FormItem>
                       <FormLabel className="flex items-center gap-2"><MapPin className="w-4 h-4"/> Alamat Lengkap</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="cth. Jl. Merdeka No. 10, Bandung" {...field} value={field.value || ''} />
+                        <Textarea placeholder="cth. Jl. Merdeka No. 10, Bandung" {...field} value={field.value || ''} disabled={isLocked} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -175,10 +185,17 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
             </div>
             
             <div className="flex justify-end pt-4">
-              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shadow-md" disabled={isSubmitting}>
-                <Save className="mr-2" />
-                {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
-              </Button>
+              {isLocked ? (
+                <Button type="button" onClick={() => setIsLocked(false)} className="w-full md:w-auto shadow-md">
+                  <Edit className="mr-2" />
+                  Perbarui Data
+                </Button>
+              ) : (
+                <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shadow-md" disabled={isSubmitting}>
+                  <Save className="mr-2" />
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </Button>
+              )}
             </div>
           </form>
         </Form>

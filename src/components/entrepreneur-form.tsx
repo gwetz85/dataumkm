@@ -200,7 +200,7 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
                           <FormLabel>Kelurahan</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl><SelectTrigger><SelectValue placeholder="Pilih Kelurahan" /></SelectTrigger></FormControl>
-                              <SelectContent><SelectItem value="" disabled>Pilih Kelurahan</SelectItem>{kelurahanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+                              <SelectContent>{kelurahanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
                           </Select>
                           <FormMessage />
                       </FormItem>
@@ -210,7 +210,7 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
                           <FormLabel>Kecamatan</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl><SelectTrigger><SelectValue placeholder="Pilih Kecamatan" /></SelectTrigger></FormControl>
-                              <SelectContent><SelectItem value="" disabled>Pilih Kecamatan</SelectItem>{kecamatanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+                              <SelectContent>{kecamatanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
                           </Select>
                           <FormMessage />
                       </FormItem>

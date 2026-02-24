@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { FileDown, FileUp } from 'lucide-react';
+import { FileDown, FileUp, Info } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function BackupPage() {
@@ -14,11 +14,13 @@ export default function BackupPage() {
     const handleExport = () => {
         try {
             const entrepreneurs = localStorage.getItem('entrepreneurs') || '[]';
-            const comparisonData = localStorage.getItem('comparisonData') || '[]';
-
+            const institutions = localStorage.getItem('institutions') || '[]';
+            const user = localStorage.getItem('user') || '{}';
+            
             const backupData = {
                 entrepreneurs: JSON.parse(entrepreneurs),
-                comparisonData: JSON.parse(comparisonData),
+                institutions: JSON.parse(institutions),
+                user: JSON.parse(user)
             };
 
             const jsonString = JSON.stringify(backupData, null, 2);
@@ -27,7 +29,7 @@ export default function BackupPage() {
             const link = document.createElement('a');
             link.href = url;
             const date = format(new Date(), 'yyyy-MM-dd');
-            link.download = `database_umkm_backup_${date}.json`;
+            link.download = `sipdata_backup_${date}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -62,7 +64,7 @@ export default function BackupPage() {
                 
                 const importedData = JSON.parse(text);
 
-                if (!importedData.hasOwnProperty('entrepreneurs') || !importedData.hasOwnProperty('comparisonData')) {
+                if (!importedData.hasOwnProperty('entrepreneurs') || !importedData.hasOwnProperty('institutions') || !importedData.hasOwnProperty('user')) {
                      toast({
                         variant: 'destructive',
                         title: 'File Backup Tidak Valid',
@@ -72,7 +74,8 @@ export default function BackupPage() {
                 }
 
                 localStorage.setItem('entrepreneurs', JSON.stringify(importedData.entrepreneurs));
-                localStorage.setItem('comparisonData', JSON.stringify(importedData.comparisonData));
+                localStorage.setItem('institutions', JSON.stringify(importedData.institutions));
+                localStorage.setItem('user', JSON.stringify(importedData.user));
 
                 toast({
                     title: 'Import Berhasil!',
@@ -101,13 +104,30 @@ export default function BackupPage() {
 
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-headline font-bold">Backup & Restore Data</h1>
+            <h1 className="text-3xl font-headline font-bold">Pengaturan & Cadangan Data</h1>
+
+            <Card className="shadow-lg border-none bg-card/80">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Info /> Penyimpanan Otomatis</CardTitle>
+                    <CardDescription>
+                        Aplikasi ini dirancang untuk berjalan secara offline dan menyimpan data Anda dengan aman.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-card-foreground/90 space-y-2">
+                    <p>
+                        <strong className="text-primary">Penyimpanan Otomatis:</strong> Semua perubahan yang Anda buat (input data UMKM, lembaga, dan pembaruan profil) secara otomatis disimpan langsung ke penyimpanan internal browser Anda. Anda tidak perlu menekan tombol simpan.
+                    </p>
+                    <p>
+                       <strong className="text-primary">Kapan Harus Backup Manual?</strong> Fitur "Export Data" di bawah ini berguna untuk membuat salinan file cadangan (.json) yang bisa Anda simpan di tempat lain (misal: Google Drive, Flashdisk). Lakukan ini secara berkala sebagai lapisan keamanan ekstra, terutama sebelum membersihkan data browser atau berpindah perangkat.
+                    </p>
+                </CardContent>
+            </Card>
 
             <Card className="shadow-lg border-none bg-card/80">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><FileDown /> Export Data</CardTitle>
                     <CardDescription>
-                        Simpan semua data aplikasi (Database Pelaku Usaha dan Data Pembanding) ke dalam satu file JSON. Simpan file ini di tempat yang aman sebagai cadangan.
+                        Simpan semua data aplikasi (Database Pelaku Usaha, Lembaga, dan Profil Pengguna) ke dalam satu file JSON. Simpan file ini di tempat yang aman sebagai cadangan.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

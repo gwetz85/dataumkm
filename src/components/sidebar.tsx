@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User, GitBranch } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -28,7 +28,7 @@ const institutionLinks = [
 
 const utilityLinks = [
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
-  { href: '/backup', label: 'Backup & Restore', icon: ArrowRightLeft },
+  { href: '/backup', label: 'Pengaturan', icon: Settings },
 ];
 
 export function Sidebar() {

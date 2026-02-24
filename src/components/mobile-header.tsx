@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, ArrowRightLeft, Building2, Library, Info, User, GitBranch } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -41,7 +41,7 @@ const institutionLinks = [
 
 const utilityLinks = [
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
-  { href: '/backup', label: 'Backup & Restore', icon: ArrowRightLeft },
+  { href: '/backup', label: 'Pengaturan', icon: Settings },
 ];
 
 export function MobileHeader() {

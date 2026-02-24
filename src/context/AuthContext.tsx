@@ -30,10 +30,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const validUsers = [
-  { username: 'agus', password: '19081985', profile: 'Administrator' },
-  { username: 'dewi', password: '10122000', profile: 'Operator' },
-];
+const credentials: Record<string, {password: string, profile: string}> = {
+  'agus': { password: '19081985', profile: 'Administrator' },
+  'dewi': { password: '10122000', profile: 'Operator' },
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const storedUser = JSON.parse(storedUserJSON);
             if (storedUser && storedUser.username && storedUser.profile) {
-                const userIsValid = validUsers.some(u => u.username === storedUser.username);
+                const userIsValid = Object.keys(credentials).includes(storedUser.username);
                 if (userIsValid) {
                     const userWithProfileData = {
                         ...storedUser,
@@ -71,18 +71,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = (username?: string, password?: string): boolean => {
     if (!username || !password) return false;
-    const validUser = validUsers.find(
-      (u) => u.username === username && u.password === password
-    );
-    if (validUser) {
+    
+    const validUser = credentials[username];
+    
+    if (validUser && validUser.password === password) {
         const existingStoredUser = JSON.parse(localStorage.getItem('user') || '{}');
         let userData = {};
-        if (existingStoredUser.username === validUser.username) {
+        if (existingStoredUser.username === username) {
             userData = existingStoredUser.data || {};
         }
 
         const userToStore: User = { 
-            username: validUser.username, 
+            username: username, 
             profile: validUser.profile,
             data: userData,
         };

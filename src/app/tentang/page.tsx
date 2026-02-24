@@ -21,9 +21,15 @@ export default function TentangPage() {
                     <p>
                         Pastikan selalu mengupdate dan membackup data untuk menghindari Update aplikasi secara mendadak.
                     </p>
-                    <p className="font-semibold text-foreground pt-2">
-                        Bantuan bisa menghubungi pembuat Aplikasi.
-                    </p>
+                     <div className="text-foreground pt-2">
+                        <p className="font-semibold">Permasalahan atau saran bisa menghubungi:</p>
+                        <div className="mt-2 space-y-1 text-card-foreground/90">
+                            <p className="font-bold">MT GROUP</p>
+                            <p>Internet dan Sistem Informasi</p>
+                            <p>Kontak : 0817319885 ( WA )</p>
+                            <p>Email : agussuriyadipunya@gmail.com</p>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         </div>

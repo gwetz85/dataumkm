@@ -5,11 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { FileDown, FileUp, Info } from 'lucide-react';
+import { FileDown, FileUp, Info, RotateCcw, FileClock } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function BackupPage() {
     const { toast } = useToast();
+    const [lastBackupTime, setLastBackupTime] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const backupJson = localStorage.getItem('sipdata_autobackup');
+        if (backupJson) {
+            try {
+                const backup = JSON.parse(backupJson);
+                if (backup.timestamp) {
+                    setLastBackupTime(backup.timestamp);
+                }
+            } catch (e) {
+                console.error("Failed to parse auto-backup timestamp", e);
+            }
+        }
+    }, []);
 
     const handleExport = () => {
         try {
@@ -102,6 +117,49 @@ export default function BackupPage() {
         reader.readAsText(file);
     };
 
+    const handleLoadAutoBackup = () => {
+        try {
+            const backupJson = localStorage.getItem('sipdata_autobackup');
+            if (!backupJson) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Backup Otomatis Tidak Ditemukan',
+                    description: 'Belum ada backup otomatis yang dibuat.',
+                });
+                return;
+            }
+    
+            const backup = JSON.parse(backupJson);
+    
+            const keys = ['entrepreneurs', 'institutions', 'user', 'user_profiles', 'comparisonData'];
+            
+            keys.forEach(key => {
+                if (backup[key]) {
+                    localStorage.setItem(key, backup[key]);
+                } else {
+                    localStorage.removeItem(key);
+                }
+            });
+    
+            toast({
+                title: 'Pemulihan Berhasil!',
+                description: `Data telah dipulihkan dari backup ${format(new Date(backup.timestamp), 'dd MMM yyyy, HH:mm')}. Aplikasi akan dimuat ulang.`,
+            });
+    
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+    
+        } catch (error) {
+            console.error("Failed to load auto-backup", error);
+            toast({
+                variant: 'destructive',
+                title: 'Gagal Memulihkan Data',
+                description: 'File backup otomatis rusak atau tidak dapat dibaca.',
+            });
+        }
+    };
+
     return (
         <div className="space-y-8">
             <h1 className="text-3xl font-headline font-bold">Pengaturan & Cadangan Data</h1>
@@ -115,7 +173,7 @@ export default function BackupPage() {
                 </CardHeader>
                 <CardContent className="text-sm text-card-foreground/90 space-y-2">
                     <p>
-                        <strong className="text-primary">Penyimpanan Otomatis:</strong> Semua perubahan yang Anda buat (input data UMKM, lembaga, dan pembaruan profil) secara otomatis disimpan langsung ke penyimpanan internal browser Anda. Anda tidak perlu menekan tombol simpan.
+                        <strong className="text-primary">Penyimpanan Otomatis:</strong> Semua perubahan yang Anda buat (input data UMKM, lembaga, dan pembaruan profil) secara otomatis disimpan langsung ke penyimpanan internal browser Anda. Selain itu, sistem membuat cadangan otomatis setiap 10 menit.
                     </p>
                     <p>
                        <strong className="text-primary">Kapan Harus Backup Manual?</strong> Fitur "Export Data" di bawah ini berguna untuk membuat salinan file cadangan (.json) yang bisa Anda simpan di tempat lain (misal: Google Drive, Flashdisk). Lakukan ini secara berkala sebagai lapisan keamanan ekstra, terutama sebelum membersihkan data browser atau berpindah perangkat.
@@ -123,9 +181,28 @@ export default function BackupPage() {
                 </CardContent>
             </Card>
 
+            <Card className="shadow-lg border-primary/20 border">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-primary"><FileClock /> Pemulihan Otomatis</CardTitle>
+                    <CardDescription>
+                        Aplikasi menyimpan cadangan otomatis setiap 10 menit. Gunakan tombol ini untuk memulihkan data dari cadangan otomatis terakhir jika terjadi kesalahan.
+                    </CardDescription>
+                    {lastBackupTime && (
+                        <p className="text-xs text-muted-foreground pt-2">
+                            Cadangan terakhir dibuat pada: {format(new Date(lastBackupTime), 'dd MMMM yyyy, HH:mm:ss')}
+                        </p>
+                    )}
+                </CardHeader>
+                <CardContent>
+                    <Button onClick={handleLoadAutoBackup}>
+                        <RotateCcw className="mr-2" /> Pulihkan dari Backup Otomatis
+                    </Button>
+                </CardContent>
+            </Card>
+
             <Card className="shadow-lg border-none bg-card/80">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileDown /> Export Data</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><FileDown /> Export Data Manual</CardTitle>
                     <CardDescription>
                         Simpan semua data aplikasi (Database Pelaku Usaha, Lembaga, dan Profil Pengguna) ke dalam satu file JSON. Simpan file ini di tempat yang aman sebagai cadangan.
                     </CardDescription>
@@ -139,9 +216,9 @@ export default function BackupPage() {
 
             <Card className="shadow-lg border-destructive/20 border">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-destructive"><FileUp /> Import Data</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-destructive"><FileUp /> Import Data Manual</CardTitle>
                     <CardDescription>
-                       Pulihkan data dari file backup JSON. <strong className="text-destructive">PERHATIAN:</strong> Tindakan ini akan menimpa semua data yang ada saat ini dengan data dari file backup.
+                       Pulihkan data dari file backup JSON manual. <strong className="text-destructive">PERHATIAN:</strong> Tindakan ini akan menimpa semua data yang ada saat ini dengan data dari file backup.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

@@ -42,6 +42,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    const backupInterval = setInterval(() => {
+        try {
+            const backupData = {
+                entrepreneurs: localStorage.getItem('entrepreneurs'),
+                institutions: localStorage.getItem('institutions'),
+                user: localStorage.getItem('user'),
+                user_profiles: localStorage.getItem('user_profiles'),
+                comparisonData: localStorage.getItem('comparisonData'),
+                timestamp: new Date().toISOString(),
+            };
+
+            // Only create backup if there's some data to prevent empty backups
+            if (backupData.entrepreneurs || backupData.institutions || backupData.user) {
+              localStorage.setItem('sipdata_autobackup', JSON.stringify(backupData));
+            }
+        } catch (error) {
+            console.error('Failed to create automatic backup:', error);
+        }
+    }, 10 * 60 * 1000); // 10 minutes
+
+    return () => clearInterval(backupInterval);
+  }, []);
+
+  useEffect(() => {
     const storedUserJSON = localStorage.getItem('user');
     if (storedUserJSON) {
         try {
@@ -49,9 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (storedUser && storedUser.username && storedUser.profile) {
                 const userIsValid = Object.keys(credentials).includes(storedUser.username);
                 if (userIsValid) {
+                    const allProfiles = JSON.parse(localStorage.getItem('user_profiles') || '{}');
+                    const userData = allProfiles[storedUser.username] || {};
                     const userWithProfileData = {
                         ...storedUser,
-                        data: storedUser.data || {},
+                        data: userData,
                     };
                     setUser(userWithProfileData);
                     setIsAuthenticated(true);

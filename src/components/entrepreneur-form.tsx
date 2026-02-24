@@ -122,11 +122,15 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
 
   function onSubmit(values: EntrepreneurFormValues) {
     onFormSubmit(values);
-    toast({
-      title: isEdit ? 'Berhasil Diperbarui!' : 'Berhasil!',
-      description: `Data untuk ${values.fullName} telah ${isEdit ? 'diperbarui' : 'ditambahkan'}.`,
-    });
-    if (!isEdit) {
+    if (isEdit) {
+      toast({
+        title: 'DATA TELAH DI PERBARUI',
+      });
+    } else {
+      toast({
+        title: 'Berhasil!',
+        description: `Data untuk ${values.fullName} telah ditambahkan.`,
+      });
       form.reset();
     }
   }

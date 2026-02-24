@@ -74,8 +74,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
   function onSubmit(values: ProfileFormValues) {
     onFormSubmit(values);
     toast({
-      title: 'Profil Diperbarui!',
-      description: `Data profil Anda telah berhasil disimpan.`,
+      title: 'DATA TELAH DI PERBARUI',
     });
     setIsLocked(true);
   }

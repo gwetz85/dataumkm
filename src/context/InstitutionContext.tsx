@@ -3,6 +3,7 @@
 import * as React from 'react';
 import type { Institution } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 type InstitutionFormValues = Omit<Institution, 'id' | 'registrationDate' | 'barcode'>;
 
@@ -65,6 +66,9 @@ export function InstitutionProvider({ children }: { children: React.ReactNode })
 
   const deleteInstitution = (id: string) => {
     setInstitutions(prev => prev.filter(e => e.id !== id));
+    toast({
+        title: "DATA BERHASIL DI HAPUS",
+    });
   };
   
   const getInstitutionById = (id: string): Institution | undefined => {

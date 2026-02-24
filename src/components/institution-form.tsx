@@ -149,11 +149,15 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
     };
 
     onFormSubmit(dataToSubmit);
-    toast({
-      title: isEdit ? 'Berhasil Diperbarui!' : 'Berhasil!',
-      description: `Data untuk ${values.institutionName} telah ${isEdit ? 'diperbarui' : 'ditambahkan'}.`,
-    });
-    if (!isEdit) {
+    if (isEdit) {
+      toast({
+        title: 'DATA TELAH DI PERBARUI',
+      });
+    } else {
+      toast({
+        title: 'Berhasil!',
+        description: `Data untuk ${values.institutionName} telah ditambahkan.`,
+      });
       form.reset();
     }
   }

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import type { Entrepreneur } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 type EntrepreneurFormValues = Omit<Entrepreneur, 'id' | 'registrationDate' | 'barcode'>;
 
@@ -65,6 +66,9 @@ export function EntrepreneurProvider({ children }: { children: React.ReactNode }
 
   const deleteEntrepreneur = (id: string) => {
     setEntrepreneurs(prev => prev.filter(e => e.id !== id));
+    toast({
+        title: "DATA BERHASIL DI HAPUS",
+    });
   };
   
   const getEntrepreneurById = (id: string): Entrepreneur | undefined => {

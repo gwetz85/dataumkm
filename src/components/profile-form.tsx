@@ -70,7 +70,7 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
       // This case should not happen based on AuthContext, but for safety:
       setIsLocked(false);
     }
-  }, [initialData, form]);
+  }, [initialData]);
 
   const { isSubmitting } = form.formState;
 
@@ -190,12 +190,12 @@ export function ProfileForm({ onFormSubmit, initialData }: ProfileFormProps) {
               {isLocked ? (
                 <Button type="button" onClick={() => setIsLocked(false)} className="w-full md:w-auto shadow-md">
                   <Edit className="mr-2" />
-                  Perbarui Data
+                  Edit Profil
                 </Button>
               ) : (
                 <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shadow-md" disabled={isSubmitting}>
                   <Save className="mr-2" />
-                  {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Profil'}
                 </Button>
               )}
             </div>

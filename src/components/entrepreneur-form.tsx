@@ -5,15 +5,15 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import {
   Briefcase,
-  CreditCard,
-  Hash,
-  Home,
-  MapPin,
-  Phone,
   User,
   UserCheck,
   Send,
   Users,
+  Calendar,
+  Home,
+  MapPin,
+  Landmark,
+  Building2,
 } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -30,20 +30,37 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useEntrepreneur } from '@/context/EntrepreneurContext';
 import type { Entrepreneur } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const kelurahanOptions = [
+    'Tanjungpinang Barat', 'Kemboja', 'Kampung Baru', 'Bukit Cermin', 
+    'Tanjungpinang Kota', 'Senggarang', 'Kampung Bugis', 'Penyengat', 
+    'Air Raja', 'Pinang Kencana', 'Melayu Kota Piring', 'Kampung Bulang', 
+    'Batu IX', 'Tanjung Ayun Sakti', 'Dompak', 'Tanjung Unggat', 
+    'Sei Jang', 'Tanjungpinang Timur'
+];
+
+const kecamatanOptions = [
+    'Tanjungpinang Kota', 'Tanjungpinang Barat', 'Tanjungpinang Timur', 'Bukit Bestari'
+];
 
 const formSchema = z.object({
-  nik: z.string().length(16, { message: 'NIK harus 16 digit.' }),
-  kk: z.string().length(16, { message: 'Nomor KK harus 16 digit.' }),
   fullName: z.string().min(2, { message: 'Nama lengkap wajib diisi.' }),
   gender: z.enum(['Laki-laki', 'Perempuan'], {
     required_error: "Anda harus memilih jenis kelamin.",
   }),
-  phoneNumber: z.string().min(10, { message: 'Masukkan nomor ponsel yang valid.' }),
+  birthPlace: z.string().min(2, { message: 'Tempat lahir wajib diisi.' }),
+  birthDate: z.string().min(1, { message: 'Tanggal lahir wajib diisi.' }),
   address: z.string().min(10, { message: 'Alamat lengkap wajib diisi.' }),
+  rt: z.string().min(1, { message: 'RT wajib diisi.' }),
+  rw: z.string().min(1, { message: 'RW wajib diisi.' }),
+  kelurahan: z.string({ required_error: 'Kelurahan wajib dipilih.' }),
+  kecamatan: z.string({ required_error: 'Kecamatan wajib dipilih.' }),
   businessType: z.string().min(2, { message: 'Jenis usaha wajib diisi.' }),
   businessLocation: z.string().min(2, { message: 'Lokasi usaha wajib diisi.' }),
+  accountNumber: z.string().min(5, { message: 'Nomor rekening wajib diisi.' }),
+  bankName: z.string().min(2, { message: 'Nama bank wajib diisi.' }),
   coordinator: z.string().min(2, { message: 'Nama koordinator wajib diisi.' }),
 });
 
@@ -57,19 +74,23 @@ type EntrepreneurFormProps = {
 
 export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: EntrepreneurFormProps) {
   const { toast } = useToast();
-  const { entrepreneurs } = useEntrepreneur();
 
   const form = useForm<EntrepreneurFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      nik: '',
-      kk: '',
       fullName: '',
       gender: undefined,
-      phoneNumber: '',
+      birthPlace: '',
+      birthDate: '',
       address: '',
+      rt: '',
+      rw: '',
+      kelurahan: undefined,
+      kecamatan: undefined,
       businessType: '',
       businessLocation: '',
+      accountNumber: '',
+      bankName: '',
       coordinator: '',
     },
   });
@@ -79,14 +100,19 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
       form.reset(initialData);
     } else if (!isEdit) {
       form.reset({
-        nik: '',
-        kk: '',
         fullName: '',
         gender: undefined,
-        phoneNumber: '',
+        birthPlace: '',
+        birthDate: '',
         address: '',
+        rt: '',
+        rw: '',
+        kelurahan: undefined,
+        kecamatan: undefined,
         businessType: '',
         businessLocation: '',
+        accountNumber: '',
+        bankName: '',
         coordinator: '',
       });
     }
@@ -95,43 +121,6 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
   const { isSubmitting } = form.formState;
 
   function onSubmit(values: EntrepreneurFormValues) {
-    if (isEdit && initialData) {
-        const otherEntrepreneurs = entrepreneurs.filter(e => e.id !== initialData.id);
-        if (otherEntrepreneurs.some(e => e.nik === values.nik)) {
-            toast({
-                variant: 'destructive',
-                title: 'Gagal Memperbarui Data',
-                description: 'NIK yang Anda masukkan sudah digunakan oleh data lain.',
-            });
-            return;
-        }
-        if (otherEntrepreneurs.some(e => e.kk === values.kk)) {
-            toast({
-                variant: 'destructive',
-                title: 'Gagal Memperbarui Data',
-                description: 'Nomor KK yang Anda masukkan sudah digunakan oleh data lain.',
-            });
-            return;
-        }
-    } else {
-        if (entrepreneurs.some(e => e.nik === values.nik)) {
-            toast({
-                variant: 'destructive',
-                title: 'Gagal Menambahkan Data',
-                description: 'NIK yang Anda masukkan sudah terdaftar.',
-            });
-            return;
-        }
-        if (entrepreneurs.some(e => e.kk === values.kk)) {
-            toast({
-                variant: 'destructive',
-                title: 'Gagal Menambahkan Data',
-                description: 'Nomor KK yang Anda masukkan sudah terdaftar.',
-            });
-            return;
-        }
-    }
-
     onFormSubmit(values);
     toast({
       title: isEdit ? 'Berhasil Diperbarui!' : 'Berhasil!',
@@ -147,155 +136,121 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            
+            {/* Data Pelaku Usaha */}
             <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><User /> Informasi Pribadi</h3>
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><User /> Data Pelaku Usaha</h3>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    render={({ field }) => (
+                  <FormField control={form.control} name="fullName" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><User className="w-4 h-4"/> Nama Lengkap</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. Budi Santoso" {...field} />
-                        </FormControl>
-                        <FormMessage />
+                          <FormLabel>Nama Lengkap</FormLabel>
+                          <FormControl><Input placeholder="cth. Budi Santoso" {...field} /></FormControl>
+                          <FormMessage />
                       </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><Phone className="w-4 h-4"/> Nomor Ponsel</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. 081234567890" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={form.control}
-                    name="nik"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><CreditCard className="w-4 h-4"/> NIK</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. 327321..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="kk"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><Hash className="w-4 h-4"/> No. KK</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. 327321..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                 <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel className="flex items-center gap-2 text-sm"><Users className="w-4 h-4"/> Jenis Kelamin</FormLabel>
+                  )} />
+                  <FormField control={form.control} name="gender" render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Jenis Kelamin</FormLabel>
                       <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          className="flex items-center gap-x-4"
-                        >
+                        <RadioGroup onValueChange={field.onChange} value={field.value} className="flex items-center gap-x-4">
                           <FormItem className="flex items-center space-x-2">
-                            <FormControl>
-                              <RadioGroupItem value="Laki-laki" id="male" />
-                            </FormControl>
+                            <FormControl><RadioGroupItem value="Laki-laki" id="male" /></FormControl>
                             <FormLabel htmlFor="male" className="font-normal cursor-pointer">Laki-laki</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2">
-                            <FormControl>
-                              <RadioGroupItem value="Perempuan" id="female" />
-                            </FormControl>
+                            <FormControl><RadioGroupItem value="Perempuan" id="female" /></FormControl>
                             <FormLabel htmlFor="female" className="font-normal cursor-pointer">Perempuan</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )}
-                />
-                 <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
+                  )} />
+                  <FormField control={form.control} name="birthPlace" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Tempat Lahir</FormLabel>
+                          <FormControl><Input placeholder="cth. Bandung" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )} />
+                  <FormField control={form.control} name="birthDate" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Tanggal Lahir</FormLabel>
+                          <FormControl><Input type="date" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="address" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2 text-sm"><MapPin className="w-4 h-4"/> Alamat Lengkap</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="cth. Jl. Merdeka No. 10, Bandung" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                        <FormLabel>Alamat Lengkap</FormLabel>
+                        <FormControl><Textarea placeholder="cth. Jl. Merdeka No. 10" {...field} /></FormControl>
+                        <FormMessage />
                     </FormItem>
-                  )}
-                />
+                )} />
+                <div className="grid md:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="rt" render={({ field }) => (
+                        <FormItem><FormLabel>RT</FormLabel><FormControl><Input placeholder="cth. 001" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="rw" render={({ field }) => (
+                        <FormItem><FormLabel>RW</FormLabel><FormControl><Input placeholder="cth. 005" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="kelurahan" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Kelurahan</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Pilih Kelurahan" /></SelectTrigger></FormControl>
+                              <SelectContent><SelectItem value="" disabled>Pilih Kelurahan</SelectItem>{kelurahanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name="kecamatan" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Kecamatan</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Pilih Kecamatan" /></SelectTrigger></FormControl>
+                              <SelectContent><SelectItem value="" disabled>Pilih Kecamatan</SelectItem>{kecamatanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                    )} />
+                </div>
             </div>
 
-             <div className="space-y-4 p-4 border rounded-lg">
-                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Briefcase /> Informasi Usaha</h3>
+            {/* Data Usaha */}
+            <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Briefcase /> Data Usaha</h3>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="businessType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><Briefcase className="w-4 h-4"/> Jenis Usaha</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. Kuliner" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="businessLocation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><Home className="w-4 h-4"/> Lokasi Usaha</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. Bandung" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <FormField control={form.control} name="businessType" render={({ field }) => (
+                      <FormItem><FormLabel>Jenis Usaha</FormLabel><FormControl><Input placeholder="cth. Kuliner" {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="businessLocation" render={({ field }) => (
+                      <FormItem><FormLabel>Lokasi Usaha</FormLabel><FormControl><Input placeholder="cth. Bandung" {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
                 </div>
-             </div>
+            </div>
              
-             <div className="space-y-4 p-4 border rounded-lg">
+            {/* Data Rekening */}
+            <div className="space-y-4 p-4 border rounded-lg">
+                <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Landmark /> Data Rekening</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="accountNumber" render={({ field }) => (
+                      <FormItem><FormLabel>Nomor Rekening</FormLabel><FormControl><Input placeholder="cth. 1234567890" {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField control={form.control} name="bankName" render={({ field }) => (
+                      <FormItem><FormLabel>Nama Bank</FormLabel><FormControl><Input placeholder="cth. Bank ABC" {...field} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                </div>
+            </div>
+
+            {/* Koordinator */}
+            <div className="space-y-4 p-4 border rounded-lg">
                 <h3 className="text-lg font-medium text-primary flex items-center gap-2"><UserCheck /> Koordinator</h3>
-                <FormField
-                    control={form.control}
-                    name="coordinator"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm"><UserCheck className="w-4 h-4"/> Nama Koordinator</FormLabel>
-                        <FormControl>
-                          <Input placeholder="cth. Andi Wijaya" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-             </div>
+                <FormField control={form.control} name="coordinator" render={({ field }) => (
+                    <FormItem><FormLabel>Nama Koordinator</FormLabel><FormControl><Input placeholder="cth. Andi Wijaya" {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+            </div>
             
             <div className="flex justify-end pt-4">
               <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shadow-md" disabled={isSubmitting}>

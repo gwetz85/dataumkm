@@ -67,9 +67,12 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
         item.fullName.toLowerCase().includes(searchLower) ||
-        item.nik.includes(searchLower) ||
-        item.barcode.includes(searchLower) ||
-        item.businessLocation.toLowerCase().includes(searchLower);
+        item.address.toLowerCase().includes(searchLower) ||
+        item.kelurahan.toLowerCase().includes(searchLower) ||
+        item.kecamatan.toLowerCase().includes(searchLower) ||
+        item.businessType.toLowerCase().includes(searchLower) ||
+        item.businessLocation.toLowerCase().includes(searchLower) ||
+        item.barcode.includes(searchLower);
 
       const matchesBusinessType = filterBusinessType === 'all' || item.businessType === filterBusinessType;
       const matchesCoordinator = filterCoordinator === 'all' || item.coordinator === filterCoordinator;
@@ -98,14 +101,13 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
     const doc = new jsPDF();
     doc.text("Data Pelaku Usaha UMKM", 14, 16);
     (doc as any).autoTable({
-        head: [['Nama', 'Kode Verifikasi', 'Jenis Kelamin', 'Jenis Usaha', 'Lokasi', 'Koordinator']],
+        head: [['Nama', 'Alamat', 'Jenis Usaha', 'Koordinator', 'Bank']],
         body: filteredData.map(item => [
             item.fullName,
-            item.barcode,
-            item.gender,
+            `${item.kelurahan}, ${item.kecamatan}`,
             item.businessType,
-            item.businessLocation,
             item.coordinator,
+            item.bankName,
         ]),
         startY: 20,
     });
@@ -118,24 +120,36 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
       doc.setFontSize(16);
       doc.text(`Data Pelaku Usaha: ${item.fullName}`, 14, 22);
       doc.setFontSize(11);
+      
+      let birthDateFormatted = 'N/A';
+      try {
+        if(item.birthDate) {
+          birthDateFormatted = format(new Date(item.birthDate), 'dd MMMM yyyy');
+        }
+      } catch (e) {
+        // Keep N/A if date is invalid
+      }
+      
       (doc as any).autoTable({
           startY: 30,
           theme: 'grid',
           body: [
               { title: 'Kode Verifikasi', data: item.barcode },
-              { title: 'NIK', data: item.nik},
-              { title: 'No. KK', data: item.kk },
               { title: 'Nama Lengkap', data: item.fullName },
               { title: 'Jenis Kelamin', data: item.gender },
-              { title: 'No. Ponsel', data: item.phoneNumber },
-              { title: 'Alamat', data: item.address },
+              { title: 'Tempat, Tanggal Lahir', data: `${item.birthPlace}, ${birthDateFormatted}` },
+              { title: 'Alamat Lengkap', data: `${item.address}, RT ${item.rt}/RW ${item.rw}` },
+              { title: 'Kelurahan', data: item.kelurahan },
+              { title: 'Kecamatan', data: item.kecamatan },
               { title: 'Jenis Usaha', data: item.businessType },
               { title: 'Lokasi Usaha', data: item.businessLocation },
+              { title: 'Nama Bank', data: item.bankName },
+              { title: 'Nomor Rekening', data: item.accountNumber },
               { title: 'Koordinator', data: item.coordinator },
               { title: 'Tanggal Registrasi', data: format(new Date(item.registrationDate), 'dd MMMM yyyy') },
           ],
           columnStyles: {
-            title: { fontStyle: 'bold', cellWidth: 45 },
+            title: { fontStyle: 'bold', cellWidth: 55 },
             data: { cellWidth: 'auto' }
           },
           columns: [
@@ -154,7 +168,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari berdasarkan nama, NIK, kode, atau lokasi..."
+              placeholder="Cari berdasarkan nama, alamat, jenis usaha..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full bg-background"
@@ -196,11 +210,9 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead>Nama Lengkap</TableHead>
-                <TableHead>Kode Verifikasi</TableHead>
-                <TableHead>Jenis Kelamin</TableHead>
-                <TableHead>Usaha</TableHead>
-                <TableHead>Lokasi</TableHead>
-                <TableHead>No. Ponsel</TableHead>
+                <TableHead>Alamat</TableHead>
+                <TableHead>Jenis Usaha</TableHead>
+                <TableHead>Lokasi Usaha</TableHead>
                 <TableHead>Koordinator</TableHead>
                 <TableHead>Terdaftar</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
@@ -211,11 +223,9 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 filteredData.map((item) => (
                   <TableRow key={item.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium">{item.fullName}</TableCell>
-                    <TableCell className="font-mono">{item.barcode}</TableCell>
-                    <TableCell>{item.gender}</TableCell>
+                    <TableCell>{item.kelurahan}, {item.kecamatan}</TableCell>
                     <TableCell>{item.businessType}</TableCell>
                     <TableCell>{item.businessLocation}</TableCell>
-                    <TableCell>{item.phoneNumber}</TableCell>
                     <TableCell>{item.coordinator}</TableCell>
                     <TableCell>{format(new Date(item.registrationDate), 'dd MMM yyyy')}</TableCell>
                     <TableCell className="text-right">
@@ -236,7 +246,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handlePrintSingle(item)} className="cursor-pointer">
                                   <Printer className="mr-2 h-4 w-4" />
-                                  <span>Cetak</span>
+                                  <span>Cetak Detail</span>
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <AlertDialog>
@@ -268,7 +278,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center h-48">
+                  <TableCell colSpan={7} className="text-center h-48">
                      <p className="text-lg text-muted-foreground">Tidak ada data yang tersedia.</p>
                      <p className="text-sm text-muted-foreground">Mulai dengan menambahkan data pelaku usaha baru.</p>
                   </TableCell>

@@ -1,13 +1,18 @@
 export type Entrepreneur = {
   id: string;
-  nik: string;
-  kk: string;
   fullName: string;
   gender: 'Laki-laki' | 'Perempuan';
-  phoneNumber: string;
+  birthPlace: string;
+  birthDate: string;
   address: string;
+  rt: string;
+  rw: string;
+  kelurahan: string;
+  kecamatan: string;
   businessType: string;
   businessLocation: string;
+  accountNumber: string;
+  bankName: string;
   coordinator: string;
   registrationDate: string;
   barcode: string;

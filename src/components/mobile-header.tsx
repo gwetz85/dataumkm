@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import RealTimeClock from './real-time-clock';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -155,53 +156,56 @@ export function MobileHeader() {
             </div>
         </div>
         
-        {user && (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                        <Avatar className="h-10 w-10">
-                            <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
-                                {user.username.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none capitalize">{user.username}</p>
-                            <p className="text-xs leading-none text-muted-foreground">
-                                {user.profile}
-                            </p>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Link href="/profil" className="cursor-pointer">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Profil</span>
-                        </Link>
-                    </DropdownMenuItem>
-                     <DropdownMenuItem asChild>
-                        <Link href="/tentang" className="cursor-pointer">
-                            <Info className="mr-2 h-4 w-4" />
-                            <span>Tentang</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href="/informasi-versi" className="cursor-pointer">
-                            <GitBranch className="mr-2 h-4 w-4" />
-                            <span>Informasi Versi</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={logout} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Logout</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        )}
+        <div className="flex items-center gap-2 sm:gap-4">
+            <RealTimeClock className="hidden sm:block" />
+            {user && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                            <Avatar className="h-10 w-10">
+                                <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
+                                    {user.username.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none capitalize">{user.username}</p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                    {user.profile}
+                                </p>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/profil" className="cursor-pointer">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>Profil</span>
+                            </Link>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                            <Link href="/tentang" className="cursor-pointer">
+                                <Info className="mr-2 h-4 w-4" />
+                                <span>Tentang</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/informasi-versi" className="cursor-pointer">
+                                <GitBranch className="mr-2 h-4 w-4" />
+                                <span>Informasi Versi</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={logout} className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer">
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Logout</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
+        </div>
     </header>
   );
 }

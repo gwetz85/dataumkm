@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Database, LogIn } from 'lucide-react';
+import RealTimeClock from './real-time-clock';
 
 const publicPaths = ['/login', '/cek-data'];
 
@@ -73,6 +74,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Sidebar />
+      <RealTimeClock className="fixed top-5 right-6 z-50 hidden md:block" />
       <div className="flex flex-col md:ml-64">
         <MobileHeader />
         <main className="flex flex-1 flex-col gap-4 p-4 md:p-8">

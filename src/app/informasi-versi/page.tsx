@@ -11,6 +11,13 @@ export default function InformasiVersiPage() {
         "Pembatasan inputan data: system akan otomatis menolak apabila ada double input baik NIK maupun Nomor KK.",
         "Update Profile untuk memberikan generated data yang sesuai di PDF print.",
         "Semua file yang sudah di upload bisa di preview melalui Database Lembaga.",
+        "Perbaikkan Database dan Input Data UMKM , menjadi lebih lengkap",
+        "Penambahan Fitur Nomor Rekening yang hanya bisa di akses di Database UMKM",
+        "Pembatasan tampilan LOGIN",
+        "Penambahan Fitur Autosave setiap 10 menit",
+        "Penambahan fitur pembacaan Autosave system",
+        "Perbaikkan di system Profil Pengguna",
+        "Penambahan beberapa Tampilan",
     ];
 
     return (

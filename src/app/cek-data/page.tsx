@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function CekDataPage() {
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, updateUserProfile } = useAuth();
   const [comparisonData, setComparisonData] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState('');
@@ -167,7 +167,8 @@ export default function CekDataPage() {
   const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        if (terminalInput.trim() === 'HapusData') {
+        const command = terminalInput.trim();
+        if (command === 'HapusData') {
             try {
                 localStorage.removeItem('comparisonData');
                 setComparisonData([]);
@@ -185,11 +186,35 @@ export default function CekDataPage() {
                     description: 'Terjadi kesalahan saat menghapus data pembanding.',
                 });
             }
-        } else {
+        } else if (command === 'ResetData') {
+             if (!user) {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Aksi Gagal',
+                    description: 'Anda harus login untuk melakukan aksi ini.',
+                });
+            } else {
+                try {
+                    updateUserProfile({}); // Reset profile
+                    toast({
+                        title: 'Berhasil!',
+                        description: 'Pengaturan profil pengguna telah direset.',
+                    });
+                } catch (error) {
+                    console.error("Failed to reset user profile", error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Gagal Mereset Profil',
+                        description: 'Terjadi kesalahan saat mereset profil pengguna.',
+                    });
+                }
+            }
+        }
+        else {
             toast({
                 variant: 'destructive',
                 title: 'Perintah Tidak Dikenal',
-                description: `Perintah "${terminalInput}" tidak valid. Gunakan 'HapusData'.`,
+                description: `Perintah "${command}" tidak valid. Gunakan 'HapusData' atau 'ResetData'.`,
             });
         }
         setTerminalInput('');
@@ -343,7 +368,7 @@ export default function CekDataPage() {
               <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-destructive"><Terminal /> Terminal Aksi Berbahaya</CardTitle>
                   <CardDescription>
-                      Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">HapusData</code> dan tekan Enter untuk menghapus semua data pembanding dari perangkat Anda.
+                      Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">HapusData</code> untuk menghapus data pembanding, atau <code className="bg-muted text-destructive font-mono p-1 rounded-sm">ResetData</code> untuk mereset profil pengguna Anda.
                   </CardDescription>
               </CardHeader>
               <CardContent>

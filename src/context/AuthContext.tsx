@@ -128,7 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUserProfile = (data: UserProfile) => {
       if (user) {
-          const updatedUser = { ...user, data: { ...user.data, ...data } };
+          const updatedUser = { ...user, data: data };
           setUser(updatedUser);
           localStorage.setItem('user', JSON.stringify(updatedUser)); // Update session
 

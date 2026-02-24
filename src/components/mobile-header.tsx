@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -22,9 +22,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import RealTimeClock from './real-time-clock';
+import { useTheme } from 'next-themes';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -49,6 +54,7 @@ export function MobileHeader() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const { logout, user } = useAuth();
+  const { setTheme } = useTheme();
 
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
@@ -126,6 +132,22 @@ export function MobileHeader() {
                                             <span>Profil</span>
                                         </Link>
                                     </DropdownMenuItem>
+                                    <DropdownMenuSub>
+                                        <DropdownMenuSubTrigger>
+                                            <Sun className="mr-2 h-4 w-4" />
+                                            <span>Tema</span>
+                                        </DropdownMenuSubTrigger>
+                                        <DropdownMenuPortal>
+                                            <DropdownMenuSubContent>
+                                                <DropdownMenuItem onClick={() => setTheme('light')}>
+                                                    Light Mode
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                                    Dark Mode
+                                                </DropdownMenuItem>
+                                            </DropdownMenuSubContent>
+                                        </DropdownMenuPortal>
+                                    </DropdownMenuSub>
                                     <DropdownMenuItem asChild>
                                         <Link href="/tentang" className="cursor-pointer" onClick={() => setOpen(false)}>
                                             <Info className="mr-2 h-4 w-4" />
@@ -185,6 +207,22 @@ export function MobileHeader() {
                                 <span>Profil</span>
                             </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                                <Sun className="mr-2 h-4 w-4" />
+                                <span>Tema</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                                <DropdownMenuSubContent>
+                                    <DropdownMenuItem onClick={() => setTheme('light')}>
+                                        Light Mode
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                        Dark Mode
+                                    </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                        </DropdownMenuSub>
                          <DropdownMenuItem asChild>
                             <Link href="/tentang" className="cursor-pointer">
                                 <Info className="mr-2 h-4 w-4" />

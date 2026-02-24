@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -14,7 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
+import { useTheme } from 'next-themes';
 
 const umkmLinks = [
   { href: '/input-data', label: 'Input Data UMKM', icon: FilePlus },
@@ -34,6 +39,7 @@ const utilityLinks = [
 export function Sidebar() {
   const pathname = usePathname();
   const { logout, user } = useAuth();
+  const { setTheme } = useTheme();
 
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
@@ -109,6 +115,22 @@ export function Sidebar() {
                             <span>Profil</span>
                         </Link>
                     </DropdownMenuItem>
+                     <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            <Sun className="mr-2 h-4 w-4" />
+                            <span>Tema</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem onClick={() => setTheme('light')}>
+                                    Light Mode
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                    Dark Mode
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
                     <DropdownMenuItem asChild>
                         <Link href="/tentang" className="cursor-pointer">
                             <Info className="mr-2 h-4 w-4" />

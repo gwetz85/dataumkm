@@ -13,17 +13,24 @@ export default function BackupPage() {
     const [lastBackupTime, setLastBackupTime] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        const backupJson = localStorage.getItem('sipdata_autobackup');
-        if (backupJson) {
-            try {
-                const backup = JSON.parse(backupJson);
-                if (backup.timestamp) {
-                    setLastBackupTime(backup.timestamp);
+        const checkLastBackupTime = () => {
+            const backupJson = localStorage.getItem('sipdata_autobackup');
+            if (backupJson) {
+                try {
+                    const backup = JSON.parse(backupJson);
+                    if (backup.timestamp) {
+                        setLastBackupTime(backup.timestamp);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse auto-backup timestamp", e);
                 }
-            } catch (e) {
-                console.error("Failed to parse auto-backup timestamp", e);
             }
-        }
+        };
+
+        checkLastBackupTime(); // Initial check on mount
+        const intervalId = setInterval(checkLastBackupTime, 5000); // Check every 5 seconds
+
+        return () => clearInterval(intervalId); // Cleanup on unmount
     }, []);
 
     const handleExport = () => {
@@ -187,14 +194,18 @@ export default function BackupPage() {
                     <CardDescription>
                         Aplikasi menyimpan cadangan otomatis setiap 10 menit. Gunakan tombol ini untuk memulihkan data dari cadangan otomatis terakhir jika terjadi kesalahan.
                     </CardDescription>
-                    {lastBackupTime && (
+                    {lastBackupTime ? (
                         <p className="text-xs text-muted-foreground pt-2">
                             Cadangan terakhir dibuat pada: {format(new Date(lastBackupTime), 'dd MMMM yyyy, HH:mm:ss')}
+                        </p>
+                    ) : (
+                        <p className="text-xs text-muted-foreground pt-2">
+                           Belum ada cadangan otomatis yang dibuat.
                         </p>
                     )}
                 </CardHeader>
                 <CardContent>
-                    <Button onClick={handleLoadAutoBackup}>
+                    <Button onClick={handleLoadAutoBackup} disabled={!lastBackupTime}>
                         <RotateCcw className="mr-2" /> Pulihkan dari Backup Otomatis
                     </Button>
                 </CardContent>

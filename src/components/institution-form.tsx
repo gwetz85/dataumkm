@@ -51,7 +51,7 @@ const formSchema = z.object({
   kemenkumhamOrKemenagFile: fileSchema,
   npwpLembagaFile: fileSchema,
   suratDomisiliFile: fileSchema,
-  activityPhoto: fileSchema.refine(file => file, { message: "Foto kegiatan/plang wajib di-upload." }),
+  activityPhoto: fileSchema,
 
   boardMembers: z.array(z.object({
       name: z.string().min(2, "Nama wajib diisi."),
@@ -213,7 +213,7 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
 
 
   return (
-    <Card className="shadow-lg border-none bg-card/80">
+    <Card className="w-full shadow-lg border-none bg-card/80">
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -265,7 +265,7 @@ export function InstitutionForm({ onFormSubmit, initialData, isEdit = false }: I
 
             <div className="space-y-4 p-4 border rounded-lg">
                 <h3 className="text-lg font-medium text-primary flex items-center gap-2"><Upload /> Upload Berkas</h3>
-                <FormDescription>Upload dokumen dalam format PDF atau gambar.</FormDescription>
+                <FormDescription>Upload dokumen dalam format PDF atau gambar. Semua berkas bersifat opsional.</FormDescription>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {fileFields.map(field => (
                      <FormField

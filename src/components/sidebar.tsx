@@ -90,6 +90,10 @@ export function Sidebar() {
             </Link>
             
             <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+            {nibLinks.map(createLink)}
+
+            <Separator className="my-3" />
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
             {umkmLinks.map(createLink)}
 
@@ -97,10 +101,6 @@ export function Sidebar() {
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
             {institutionLinks.map(createLink)}
             
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
-            {nibLinks.map(createLink)}
-
             <Separator className="my-3" />
           </>
         )}

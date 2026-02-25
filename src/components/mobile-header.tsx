@@ -107,14 +107,14 @@ export function MobileHeader() {
                           <>
                             {navLinks.map(createLink)}
                             <Separator className="my-2" />
+                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+                            {nibLinks.map(createLink)}
+                            <Separator className="my-2" />
                             <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
                             {umkmLinks.map(createLink)}
                             <Separator className="my-2" />
                             <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
                             {institutionLinks.map(createLink)}
-                            <Separator className="my-2" />
-                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
-                            {nibLinks.map(createLink)}
                             <Separator className="my-2" />
                           </>
                         )}

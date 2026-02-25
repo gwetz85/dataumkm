@@ -1,5 +1,7 @@
 export type Entrepreneur = {
   id: string;
+  nik: string;
+  noKK: string;
   fullName: string;
   gender: 'Laki-laki' | 'Perempuan';
   birthPlace: string;

@@ -67,6 +67,8 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
         item.fullName.toLowerCase().includes(searchLower) ||
+        (item.nik && item.nik.includes(searchLower)) ||
+        (item.noKK && item.noKK.includes(searchLower)) ||
         item.address.toLowerCase().includes(searchLower) ||
         item.kelurahan.toLowerCase().includes(searchLower) ||
         item.kecamatan.toLowerCase().includes(searchLower) ||
@@ -136,6 +138,8 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           body: [
               { title: 'Kode Verifikasi', data: item.barcode },
               { title: 'Nama Lengkap', data: item.fullName },
+              { title: 'NIK', data: item.nik },
+              { title: 'Nomor KK', data: item.noKK },
               { title: 'Jenis Kelamin', data: item.gender },
               { title: 'Tempat, Tanggal Lahir', data: `${item.birthPlace}, ${birthDateFormatted}` },
               { title: 'Alamat Lengkap', data: `${item.address}, RT ${item.rt}/RW ${item.rw}` },
@@ -168,7 +172,7 @@ export function EntrepreneurDataTable({ data }: EntrepreneurDataTableProps) {
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari berdasarkan nama, alamat, jenis usaha..."
+              placeholder="Cari berdasarkan nama, NIK, No. KK, alamat..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full bg-background"

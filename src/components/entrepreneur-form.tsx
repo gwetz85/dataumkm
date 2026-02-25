@@ -14,6 +14,7 @@ import {
   MapPin,
   Landmark,
   Building2,
+  CreditCard,
 } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,8 @@ const formSchema = z.object({
   gender: z.enum(['Laki-laki', 'Perempuan'], {
     required_error: "Anda harus memilih jenis kelamin.",
   }),
+  nik: z.string().length(16, { message: 'NIK harus 16 digit.' }),
+  noKK: z.string().length(16, { message: 'Nomor KK harus 16 digit.' }),
   birthPlace: z.string().min(2, { message: 'Tempat lahir wajib diisi.' }),
   birthDate: z.string().min(1, { message: 'Tanggal lahir wajib diisi.' }),
   address: z.string().min(10, { message: 'Alamat lengkap wajib diisi.' }),
@@ -80,6 +83,8 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
     defaultValues: initialData || {
       fullName: '',
       gender: undefined,
+      nik: '',
+      noKK: '',
       birthPlace: '',
       birthDate: '',
       address: '',
@@ -102,6 +107,8 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
       form.reset({
         fullName: '',
         gender: undefined,
+        nik: '',
+        noKK: '',
         birthPlace: '',
         birthDate: '',
         address: '',
@@ -136,7 +143,7 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
   }
 
   return (
-    <Card className="shadow-lg border-none bg-card/80">
+    <Card className="w-full shadow-lg border-none bg-card/80">
       <CardContent className="pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -170,6 +177,26 @@ export function EntrepreneurForm({ onFormSubmit, initialData, isEdit = false }: 
                       <FormMessage />
                     </FormItem>
                   )} />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="nik" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>NIK</FormLabel>
+                          <FormControl><Input placeholder="16 digit Nomor Induk Kependudukan" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )} />
+                  <FormField control={form.control} name="noKK" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Nomor KK</FormLabel>
+                          <FormControl><Input placeholder="16 digit Nomor Kartu Keluarga" {...field} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  )} />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
                   <FormField control={form.control} name="birthPlace" render={({ field }) => (
                       <FormItem>
                           <FormLabel>Tempat Lahir</FormLabel>

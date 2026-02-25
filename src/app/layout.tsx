@@ -6,6 +6,7 @@ import { InstitutionProvider } from '@/context/InstitutionContext';
 import { AuthProvider } from '@/context/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
 import { ThemeProvider } from '@/components/theme-provider';
+import { NIBProvider } from '@/context/NIBContext';
 
 
 export const metadata: Metadata = {
@@ -34,14 +35,16 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <InstitutionProvider>
-              <EntrepreneurProvider>
-                  <AuthGuard>
-                      {children}
-                  </AuthGuard>
-                  <Toaster />
-              </EntrepreneurProvider>
-            </InstitutionProvider>
+            <NIBProvider>
+              <InstitutionProvider>
+                <EntrepreneurProvider>
+                    <AuthGuard>
+                        {children}
+                    </AuthGuard>
+                    <Toaster />
+                </EntrepreneurProvider>
+              </InstitutionProvider>
+            </NIBProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

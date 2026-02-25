@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -44,6 +44,11 @@ const institutionLinks = [
   { href: '/input-lembaga', label: 'Input Lembaga', icon: Building2 },
   { href: '/database-lembaga', label: 'Database Lembaga', icon: Library },
 ]
+
+const nibLinks = [
+  { href: '/input-nib', label: 'Input Data NIB', icon: FileSignature },
+  { href: '/database-nib', label: 'Database NIB', icon: Database },
+];
 
 const utilityLinks = [
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
@@ -107,6 +112,9 @@ export function MobileHeader() {
                             <Separator className="my-2" />
                             <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
                             {institutionLinks.map(createLink)}
+                            <Separator className="my-2" />
+                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+                            {nibLinks.map(createLink)}
                             <Separator className="my-2" />
                           </>
                         )}
@@ -185,7 +193,7 @@ export function MobileHeader() {
         </div>
         
         <div className="flex items-center gap-2 sm:gap-4">
-            <RealTimeClock />
+            <RealTimeClock className="flex-shrink-0" />
             {user && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

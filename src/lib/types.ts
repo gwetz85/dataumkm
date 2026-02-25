@@ -58,3 +58,21 @@ export type Institution = {
   registrationDate: string;
   barcode: string;
 };
+
+export type NIB = {
+  id: string;
+  fullName: string;
+  nik: string;
+  birthPlace: string;
+  birthDate: string;
+  address: string;
+  rt: string;
+  rw: string;
+  businessType: string;
+  businessName: string;
+  businessLocation: string;
+  businessCapital: string;
+  businessDuration: string;
+  registrationDate: string;
+  barcode: string;
+};

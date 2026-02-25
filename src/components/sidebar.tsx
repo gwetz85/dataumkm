@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -30,6 +30,11 @@ const institutionLinks = [
   { href: '/input-lembaga', label: 'Input Lembaga', icon: Building2 },
   { href: '/database-lembaga', label: 'Database Lembaga', icon: Library },
 ]
+
+const nibLinks = [
+  { href: '/input-nib', label: 'Input Data NIB', icon: FileSignature },
+  { href: '/database-nib', label: 'Database NIB', icon: Database },
+];
 
 const utilityLinks = [
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
@@ -92,6 +97,10 @@ export function Sidebar() {
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
             {institutionLinks.map(createLink)}
             
+            <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+            {nibLinks.map(createLink)}
+
             <Separator className="my-3" />
           </>
         )}

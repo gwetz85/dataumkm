@@ -68,6 +68,7 @@ export type NIB = {
   address: string;
   rt: string;
   rw: string;
+  kelurahan: string;
   businessType: string;
   businessName: string;
   businessLocation: string;

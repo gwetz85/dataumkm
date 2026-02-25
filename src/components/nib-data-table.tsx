@@ -57,6 +57,7 @@ export function NIBDataTable({ data }: NIBDataTableProps) {
              item.nik.includes(searchLower) ||
              item.businessName.toLowerCase().includes(searchLower) ||
              item.businessType.toLowerCase().includes(searchLower) ||
+             item.kelurahan.toLowerCase().includes(searchLower) ||
              item.barcode.includes(searchLower);
     });
   }, [data, searchTerm]);
@@ -101,6 +102,7 @@ export function NIBDataTable({ data }: NIBDataTableProps) {
               { title: 'NIK', data: item.nik },
               { title: 'Tempat, Tanggal Lahir', data: `${item.birthPlace}, ${birthDateFormatted}` },
               { title: 'Alamat Lengkap', data: `${item.address}, RT ${item.rt}/RW ${item.rw}` },
+              { title: 'Kelurahan', data: item.kelurahan },
               { title: 'Usaha', data: item.businessType },
               { title: 'Nama Usaha', data: item.businessName },
               { title: 'Lokasi Usaha', data: item.businessLocation },

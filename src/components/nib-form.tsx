@@ -28,6 +28,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { NIB } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const kelurahanOptions = [
+    'Tanjungpinang Barat', 'Kemboja', 'Kampung Baru', 'Bukit Cermin', 
+    'Tanjungpinang Kota', 'Senggarang', 'Kampung Bugis', 'Penyengat', 
+    'Air Raja', 'Pinang Kencana', 'Melayu Kota Piring', 'Kampung Bulang', 
+    'Batu IX', 'Tanjung Ayun Sakti', 'Dompak', 'Tanjung Unggat', 
+    'Sei Jang', 'Tanjungpinang Timur'
+];
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: 'Nama lengkap wajib diisi.' }),
@@ -37,6 +46,7 @@ const formSchema = z.object({
   address: z.string().min(10, { message: 'Alamat lengkap wajib diisi.' }),
   rt: z.string().min(1, { message: 'RT wajib diisi.' }),
   rw: z.string().min(1, { message: 'RW wajib diisi.' }),
+  kelurahan: z.string({ required_error: 'Kelurahan wajib dipilih.' }),
   businessType: z.string().min(2, { message: 'Usaha wajib diisi.' }),
   businessName: z.string().min(2, { message: 'Nama usaha wajib diisi.' }),
   businessLocation: z.string().min(2, { message: 'Lokasi usaha wajib diisi.' }),
@@ -65,6 +75,7 @@ export function NIBForm({ onFormSubmit, initialData, isEdit = false }: NIBFormPr
       address: '',
       rt: '',
       rw: '',
+      kelurahan: undefined,
       businessType: '',
       businessName: '',
       businessLocation: '',
@@ -85,6 +96,7 @@ export function NIBForm({ onFormSubmit, initialData, isEdit = false }: NIBFormPr
         address: '',
         rt: '',
         rw: '',
+        kelurahan: undefined,
         businessType: '',
         businessName: '',
         businessLocation: '',
@@ -159,12 +171,22 @@ export function NIBForm({ onFormSubmit, initialData, isEdit = false }: NIBFormPr
                         <FormMessage />
                     </FormItem>
                 )} />
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-3 gap-4">
                     <FormField control={form.control} name="rt" render={({ field }) => (
                         <FormItem><FormLabel>RT</FormLabel><FormControl><Input placeholder="cth. 001" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rw" render={({ field }) => (
                         <FormItem><FormLabel>RW</FormLabel><FormControl><Input placeholder="cth. 005" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="kelurahan" render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Kelurahan</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl><SelectTrigger><SelectValue placeholder="Pilih Kelurahan" /></SelectTrigger></FormControl>
+                              <SelectContent>{kelurahanOptions.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
                     )} />
                 </div>
             </div>

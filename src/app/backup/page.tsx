@@ -5,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { FileDown, FileUp, Info, RotateCcw, FileClock } from 'lucide-react';
+import { FileDown, FileUp, Info, RotateCcw, FileClock, Terminal } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BackupPage() {
     const { toast } = useToast();
     const [lastBackupTime, setLastBackupTime] = React.useState<string | null>(null);
+    const { user } = useAuth();
+    const isDataChecker = user?.profile === 'Data Checker';
 
     React.useEffect(() => {
         const checkLastBackupTime = () => {
@@ -51,7 +54,7 @@ export default function BackupPage() {
             const link = document.createElement('a');
             link.href = url;
             const date = format(new Date(), 'yyyy-MM-dd');
-            link.download = `sipdata_backup_${date}.json`;
+            link.download = `sidata_backup_${date}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -167,6 +170,77 @@ export default function BackupPage() {
         }
     };
 
+    const handleTerminalCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const command = e.currentTarget.value.trim();
+        if (command === 'HapusData') {
+            try {
+                localStorage.removeItem('comparisonData');
+                // setComparisonData([]);
+                // setSearchResult(null);
+                // setSearchTerm('');
+                toast({
+                    title: 'Berhasil!',
+                    description: 'Data pembanding telah dihapus dari perangkat.',
+                });
+            } catch (error) {
+                console.error("Failed to remove comparison data", error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Gagal Menghapus Data',
+                    description: 'Terjadi kesalahan saat menghapus data pembanding.',
+                });
+            }
+        } else if (command === 'ResetData') {
+             if (!user) {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Aksi Gagal',
+                    description: 'Anda harus login untuk melakukan aksi ini.',
+                });
+            } else {
+                try {
+                    // updateUserProfile({}); // Reset profile
+                    // This is handled in AuthContext now
+                    const allProfiles = JSON.parse(localStorage.getItem('user_profiles') || '{}');
+                    delete allProfiles[user.username];
+                    localStorage.setItem('user_profiles', JSON.stringify(allProfiles));
+                    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    if(currentUser.username === user.username) {
+                        currentUser.data = {};
+                        localStorage.setItem('user', JSON.stringify(currentUser));
+                    }
+
+                    toast({
+                        title: 'Berhasil!',
+                        description: 'Pengaturan profil pengguna telah direset. Silakan muat ulang.',
+                    });
+                     setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } catch (error) {
+                    console.error("Failed to reset user profile", error);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Gagal Mereset Profil',
+                        description: 'Terjadi kesalahan saat mereset profil pengguna.',
+                    });
+                }
+            }
+        }
+        else {
+            toast({
+                variant: 'destructive',
+                title: 'Perintah Tidak Dikenal',
+                description: `Perintah "${command}" tidak valid. Gunakan 'HapusData' atau 'ResetData'.`,
+            });
+        }
+        e.currentTarget.value = '';
+    }
+  };
+
+
     return (
         <div className="space-y-8">
             <h1 className="text-3xl font-headline font-bold">Pengaturan & Cadangan Data</h1>
@@ -204,13 +278,16 @@ export default function BackupPage() {
                         </p>
                     )}
                 </CardHeader>
+                {!isDataChecker && (
                 <CardContent>
                     <Button onClick={handleLoadAutoBackup} disabled={!lastBackupTime}>
                         <RotateCcw className="mr-2" /> Pulihkan dari Backup Otomatis
                     </Button>
                 </CardContent>
+                )}
             </Card>
 
+            {!isDataChecker && (
             <Card className="shadow-lg border-none bg-card/80">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><FileDown /> Export Data Manual</CardTitle>
@@ -224,6 +301,7 @@ export default function BackupPage() {
                     </Button>
                 </CardContent>
             </Card>
+            )}
 
             <Card className="shadow-lg border-destructive/20 border">
                 <CardHeader>
@@ -241,6 +319,27 @@ export default function BackupPage() {
                     />
                 </CardContent>
             </Card>
+            
+            {!isDataChecker && (
+            <Card className="shadow-lg border-destructive/20 border">
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-destructive"><Terminal /> Terminal Aksi Berbahaya</CardTitle>
+                  <CardDescription>
+                      Gunakan terminal ini untuk melakukan aksi yang tidak bisa dibatalkan. Ketik <code className="bg-muted text-destructive font-mono p-1 rounded-sm">HapusData</code> untuk menghapus data pembanding, atau <code className="bg-muted text-destructive font-mono p-1 rounded-sm">ResetData</code> untuk mereset profil pengguna Anda.
+                  </CardDescription>
+              </CardHeader>
+              <CardContent>
+                  <div className="bg-slate-900 text-green-400 font-mono p-2 rounded-md flex items-center gap-2">
+                      <span className="pl-2 text-green-400/70">$</span>
+                      <Input 
+                          placeholder="Ketik perintah di sini..."
+                          className="bg-transparent border-none text-green-400 placeholder:text-green-400/50 focus-visible:ring-0 focus-visible:ring-offset-0 !p-2"
+                          onKeyDown={handleTerminalCommand}
+                      />
+                  </div>
+              </CardContent>
+          </Card>
+          )}
         </div>
     );
 }

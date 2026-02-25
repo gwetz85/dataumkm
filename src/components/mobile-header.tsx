@@ -111,10 +111,7 @@ export function MobileHeader() {
                           </>
                         )}
                         <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
-                        {utilityLinks.map(link => {
-                          if (isDataChecker && link.href === '/backup') return null;
-                          return createLink(link);
-                        })}
+                        {utilityLinks.map(createLink)}
                     </nav>
                     <div className="mt-auto p-4 border-t">
                         {user && (

@@ -19,7 +19,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const isDataChecker = user?.profile === 'Data Checker';
-  const dataCheckerAllowedPaths = ['/cek-data', '/profil', '/tentang', '/informasi-versi'];
+  const dataCheckerAllowedPaths = ['/cek-data', '/backup', '/profil', '/tentang', '/informasi-versi'];
 
   useEffect(() => {
     if (!loading && !isAuthenticated && !publicPaths.includes(pathname)) {
@@ -29,7 +29,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (!loading && isAuthenticated && isDataChecker && !dataCheckerAllowedPaths.includes(pathname)) {
         router.replace('/cek-data');
     }
-  }, [isAuthenticated, loading, pathname, router, isDataChecker]);
+  }, [isAuthenticated, loading, pathname, router, isDataChecker, dataCheckerAllowedPaths]);
 
   if (loading) {
       return (

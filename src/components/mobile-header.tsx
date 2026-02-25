@@ -56,6 +56,8 @@ export function MobileHeader() {
   const { logout, user } = useAuth();
   const { setTheme } = useTheme();
 
+  const isDataChecker = user?.profile === 'Data Checker';
+
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
     return (
@@ -96,16 +98,23 @@ export function MobileHeader() {
                         </SheetTitle>
                     </SheetHeader>
                     <nav className="grid gap-1 text-lg font-medium p-4">
-                        {navLinks.map(createLink)}
-                        <Separator className="my-2" />
-                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
-                        {umkmLinks.map(createLink)}
-                        <Separator className="my-2" />
-                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
-                        {institutionLinks.map(createLink)}
-                        <Separator className="my-2" />
+                        {!isDataChecker && (
+                          <>
+                            {navLinks.map(createLink)}
+                            <Separator className="my-2" />
+                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
+                            {umkmLinks.map(createLink)}
+                            <Separator className="my-2" />
+                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
+                            {institutionLinks.map(createLink)}
+                            <Separator className="my-2" />
+                          </>
+                        )}
                         <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
-                        {utilityLinks.map(createLink)}
+                        {utilityLinks.map(link => {
+                          if (isDataChecker && link.href === '/backup') return null;
+                          return createLink(link);
+                        })}
                     </nav>
                     <div className="mt-auto p-4 border-t">
                         {user && (

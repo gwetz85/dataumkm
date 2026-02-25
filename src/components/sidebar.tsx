@@ -41,6 +41,8 @@ export function Sidebar() {
   const { logout, user } = useAuth();
   const { setTheme } = useTheme();
 
+  const isDataChecker = user?.profile === 'Data Checker';
+
   const createLink = (link: {href: string, label: string, icon: any}) => {
     const isActive = pathname === link.href;
     return (
@@ -69,28 +71,37 @@ export function Sidebar() {
           </h1>
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1">
-        <Link
-          href="/"
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-4 py-3 text-card-foreground transition-all hover:bg-primary/10 hover:text-primary',
-            pathname === '/' && 'bg-primary/20 text-primary font-bold'
-          )}
-        >
-          <LayoutDashboard className="h-5 w-5" />
-          Dashboard
-        </Link>
-        
-        <Separator className="my-3" />
-        <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
-        {umkmLinks.map(createLink)}
+        {!isDataChecker && (
+          <>
+            <Link
+              href="/"
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-4 py-3 text-card-foreground transition-all hover:bg-primary/10 hover:text-primary',
+                pathname === '/' && 'bg-primary/20 text-primary font-bold'
+              )}
+            >
+              <LayoutDashboard className="h-5 w-5" />
+              Dashboard
+            </Link>
+            
+            <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
+            {umkmLinks.map(createLink)}
 
-        <Separator className="my-3" />
-        <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
-        {institutionLinks.map(createLink)}
-        
-        <Separator className="my-3" />
+            <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
+            {institutionLinks.map(createLink)}
+            
+            <Separator className="my-3" />
+          </>
+        )}
         <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Utilitas</p>
-        {utilityLinks.map(createLink)}
+        {utilityLinks.map(link => {
+          if (isDataChecker && link.href === '/backup') {
+            return null;
+          }
+          return createLink(link);
+        })}
       </nav>
       <div className="mt-auto p-4 border-t">
           {user && (

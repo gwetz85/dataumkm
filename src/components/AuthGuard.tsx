@@ -14,15 +14,22 @@ import RealTimeClock from './real-time-clock';
 const publicPaths = ['/login', '/cek-data'];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  const isDataChecker = user?.profile === 'Data Checker';
+  const dataCheckerAllowedPaths = ['/cek-data', '/profil', '/tentang', '/informasi-versi'];
 
   useEffect(() => {
     if (!loading && !isAuthenticated && !publicPaths.includes(pathname)) {
       router.replace('/login');
     }
-  }, [isAuthenticated, loading, pathname, router]);
+
+    if (!loading && isAuthenticated && isDataChecker && !dataCheckerAllowedPaths.includes(pathname)) {
+        router.replace('/cek-data');
+    }
+  }, [isAuthenticated, loading, pathname, router, isDataChecker]);
 
   if (loading) {
       return (

@@ -33,6 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const credentials: Record<string, {password: string, profile: string}> = {
   'agus': { password: '19081985', profile: 'Administrator' },
   'dewi': { password: '10122000', profile: 'Operator' },
+  'cdata': { password: 'cdata', profile: 'Data Checker' },
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -113,7 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('user', JSON.stringify(userToStore));
         setUser(userToStore);
         setIsAuthenticated(true);
-        router.push('/');
+        if (userToStore.profile === 'Data Checker') {
+            router.push('/cek-data');
+        } else {
+            router.push('/');
+        }
         return true;
     }
     return false;

@@ -30,6 +30,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import RealTimeClock from './real-time-clock';
 import { useTheme } from 'next-themes';
+import { ScrollArea } from './ui/scroll-area';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -107,28 +108,30 @@ export function MobileHeader() {
                             </h1>
                         </SheetTitle>
                     </SheetHeader>
-                    <nav className="grid gap-1 text-lg font-medium p-4">
-                        {!isDataChecker && (
-                          <>
-                            {navLinks.map(createLink)}
-                            <Separator className="my-2" />
-                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
-                            {nibLinks.map(createLink)}
-                            <Separator className="my-2" />
-                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
-                            {umkmLinks.map(createLink)}
-                            <Separator className="my-2" />
-                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
-                            {halalLinks.map(createLink)}
-                            <Separator className="my-2" />
-                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
-                            {institutionLinks.map(createLink)}
-                            <Separator className="my-2" />
-                          </>
-                        )}
-                        <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
-                        {utilityLinks.map(createLink)}
-                    </nav>
+                    <ScrollArea className="flex-1">
+                      <nav className="grid gap-1 text-lg font-medium p-4">
+                          {!isDataChecker && (
+                            <>
+                              {navLinks.map(createLink)}
+                              <Separator className="my-2" />
+                              <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+                              {nibLinks.map(createLink)}
+                              <Separator className="my-2" />
+                              <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">UMKM</p>
+                              {umkmLinks.map(createLink)}
+                              <Separator className="my-2" />
+                              <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
+                              {halalLinks.map(createLink)}
+                              <Separator className="my-2" />
+                              <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
+                              {institutionLinks.map(createLink)}
+                              <Separator className="my-2" />
+                            </>
+                          )}
+                          <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Utilitas</p>
+                          {utilityLinks.map(createLink)}
+                      </nav>
+                    </ScrollArea>
                     <div className="mt-auto p-4 border-t">
                         {user && (
                              <DropdownMenu>

@@ -20,6 +20,7 @@ import {
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from 'next-themes';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const umkmLinks = [
   { href: '/input-data', label: 'Input Data UMKM', icon: FilePlus },
@@ -80,42 +81,44 @@ export function Sidebar() {
             SiDATA
           </h1>
       </div>
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        {!isDataChecker && (
-          <>
-            <Link
-              href="/"
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-4 py-3 text-card-foreground transition-all hover:bg-primary/10 hover:text-primary',
-                pathname === '/' && 'bg-primary/20 text-primary font-bold'
-              )}
-            >
-              <LayoutDashboard className="h-5 w-5" />
-              Dashboard
-            </Link>
-            
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
-            {nibLinks.map(createLink)}
+      <ScrollArea className="flex-1">
+        <nav className="px-4 py-6 space-y-1">
+          {!isDataChecker && (
+            <>
+              <Link
+                href="/"
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-4 py-3 text-card-foreground transition-all hover:bg-primary/10 hover:text-primary',
+                  pathname === '/' && 'bg-primary/20 text-primary font-bold'
+                )}
+              >
+                <LayoutDashboard className="h-5 w-5" />
+                Dashboard
+              </Link>
+              
+              <Separator className="my-3" />
+              <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Pembuatan NIB</p>
+              {nibLinks.map(createLink)}
 
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
-            {umkmLinks.map(createLink)}
-            
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
-            {halalLinks.map(createLink)}
+              <Separator className="my-3" />
+              <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
+              {umkmLinks.map(createLink)}
+              
+              <Separator className="my-3" />
+              <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
+              {halalLinks.map(createLink)}
 
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
-            {institutionLinks.map(createLink)}
-            
-            <Separator className="my-3" />
-          </>
-        )}
-        <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Utilitas</p>
-        {utilityLinks.map(createLink)}
-      </nav>
+              <Separator className="my-3" />
+              <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
+              {institutionLinks.map(createLink)}
+              
+              <Separator className="my-3" />
+            </>
+          )}
+          <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Utilitas</p>
+          {utilityLinks.map(createLink)}
+        </nav>
+      </ScrollArea>
       <div className="mt-auto p-4 border-t">
           {user && (
             <DropdownMenu>

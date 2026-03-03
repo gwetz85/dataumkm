@@ -101,14 +101,14 @@ export function Sidebar() {
             <Separator className="my-3" />
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">UMKM</p>
             {umkmLinks.map(createLink)}
-
-            <Separator className="my-3" />
-            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
-            {institutionLinks.map(createLink)}
             
             <Separator className="my-3" />
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
             {halalLinks.map(createLink)}
+
+            <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
+            {institutionLinks.map(createLink)}
             
             <Separator className="my-3" />
           </>

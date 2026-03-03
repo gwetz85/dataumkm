@@ -77,3 +77,60 @@ export type NIB = {
   registrationDate: string;
   barcode: string;
 };
+
+export type HalalPersonData = {
+  name: string;
+  nik: string;
+  gender: 'Laki-laki' | 'Perempuan';
+  phoneNumber: string;
+  email: string;
+  address: string;
+  rt: string;
+  rw: string;
+  kelurahan: string;
+  postalCode: string;
+};
+
+export type HalalFactoryData = {
+  address: string;
+  rt: string;
+  rw: string;
+  kelurahan: string;
+  postalCode: string;
+};
+
+export type HalalCertification = {
+  id: string;
+  barcode: string;
+  registrationDate: string;
+  
+  businessOwner: HalalPersonData;
+  personInCharge: HalalPersonData;
+  factory: HalalFactoryData;
+
+  businessActivity: {
+    businessName: string;
+    businessType: string;
+    businessCapital: string;
+    income: string;
+    businessDuration: string;
+    productMarketing: string;
+  };
+
+  ingredients: string;
+  equipmentCleaning: string;
+  packaging: string;
+  processingMethod: string;
+
+  nibCheck: {
+    nibNumber: string;
+    kbli: string;
+    productResult: string;
+  };
+
+  siHalalAccount: {
+    email: string;
+    password: string;
+    accountStatus: string;
+  };
+};

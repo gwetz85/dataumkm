@@ -7,6 +7,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import AuthGuard from '@/components/AuthGuard';
 import { ThemeProvider } from '@/components/theme-provider';
 import { NIBProvider } from '@/context/NIBContext';
+import { HalalProvider } from '@/context/HalalContext';
 
 
 export const metadata: Metadata = {
@@ -35,16 +36,18 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <NIBProvider>
-              <InstitutionProvider>
-                <EntrepreneurProvider>
-                    <AuthGuard>
-                        {children}
-                    </AuthGuard>
-                    <Toaster />
-                </EntrepreneurProvider>
-              </InstitutionProvider>
-            </NIBProvider>
+            <HalalProvider>
+              <NIBProvider>
+                <InstitutionProvider>
+                  <EntrepreneurProvider>
+                      <AuthGuard>
+                          {children}
+                      </AuthGuard>
+                      <Toaster />
+                  </EntrepreneurProvider>
+                </InstitutionProvider>
+              </NIBProvider>
+            </HalalProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

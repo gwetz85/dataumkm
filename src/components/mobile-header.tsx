@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button';
-import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature } from 'lucide-react';
+import { PanelLeft, Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -48,6 +48,11 @@ const institutionLinks = [
 const nibLinks = [
   { href: '/input-nib', label: 'Input Data NIB', icon: FileSignature },
   { href: '/database-nib', label: 'Database NIB', icon: Database },
+];
+
+const halalLinks = [
+  { href: '/input-sertifikat-halal', label: 'Input Data Pengajuan', icon: FilePlus },
+  { href: '/database-sertifikat-halal', label: 'Database Pengajuan', icon: Database },
 ];
 
 const utilityLinks = [
@@ -115,6 +120,9 @@ export function MobileHeader() {
                             <Separator className="my-2" />
                             <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Lembaga</p>
                             {institutionLinks.map(createLink)}
+                            <Separator className="my-2" />
+                            <p className="px-3 text-sm text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
+                            {halalLinks.map(createLink)}
                             <Separator className="my-2" />
                           </>
                         )}

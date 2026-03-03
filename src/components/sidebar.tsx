@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature } from 'lucide-react';
+import { Database, LayoutDashboard, FilePlus, Users, FileSearch, LogOut, Settings, Building2, Library, Info, User, GitBranch, Sun, FileSignature, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from './ui/button';
@@ -36,6 +36,11 @@ const nibLinks = [
   { href: '/database-nib', label: 'Database NIB', icon: Database },
 ];
 
+const halalLinks = [
+  { href: '/input-sertifikat-halal', label: 'Input Data Pengajuan', icon: FilePlus },
+  { href: '/database-sertifikat-halal', label: 'Database Pengajuan', icon: Database },
+];
+
 const utilityLinks = [
   { href: '/cek-data', label: 'Cek Data', icon: FileSearch },
   { href: '/backup', label: 'Pengaturan', icon: Settings },
@@ -49,7 +54,7 @@ export function Sidebar() {
   const isDataChecker = user?.profile === 'Data Checker';
 
   const createLink = (link: {href: string, label: string, icon: any}) => {
-    const isActive = pathname === link.href;
+    const isActive = pathname === link.href || (link.href.includes('input') && pathname.includes('input'));
     return (
       <Link
         key={link.href}
@@ -100,6 +105,10 @@ export function Sidebar() {
             <Separator className="my-3" />
             <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Lembaga</p>
             {institutionLinks.map(createLink)}
+            
+            <Separator className="my-3" />
+            <p className="px-4 text-xs text-muted-foreground font-semibold uppercase">Sertifikat Halal</p>
+            {halalLinks.map(createLink)}
             
             <Separator className="my-3" />
           </>

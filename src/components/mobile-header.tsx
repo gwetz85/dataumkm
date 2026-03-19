@@ -77,33 +77,34 @@ export function MobileHeader() {
         href={link.href}
         onClick={() => setOpen(false)}
         className={cn(
-            'flex items-center gap-4 rounded-xl px-3 py-3 text-muted-foreground transition-all hover:text-foreground',
-            isActive && 'bg-muted text-foreground'
+            'flex items-center gap-4 rounded-xl px-4 py-2.5 text-muted-foreground transition-all hover:bg-primary/10 hover:text-primary hover:translate-x-1',
+            isActive && 'bg-gradient-to-r from-primary/15 to-transparent text-primary font-bold shadow-sm border-l-2 border-primary'
         )}
         >
-            <link.icon className="h-5 w-5" />
-            {link.label}
+            <link.icon className={cn("h-5 w-5 opacity-80", isActive && "opacity-100")} />
+            <span className="text-sm">{link.label}</span>
         </Link>
     );
   }
 
   return (
-    <header className="md:hidden bg-card border-b shadow-sm sticky top-0 z-50 flex h-20 items-center gap-4 px-4 sm:px-6 justify-between">
+    <header className="md:hidden glass-panel bg-card/70 border-b border-white/10 sticky top-0 z-50 flex h-20 items-center gap-4 px-4 sm:px-6 justify-between transition-all duration-300">
         <div className="flex items-center gap-4">
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
-                    <Button size="icon" variant="outline">
+                    <Button size="icon" variant="outline" className="glass-card border-white/10">
                         <PanelLeft className="h-5 w-5" />
                         <span className="sr-only">Toggle Menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="sm:max-w-xs p-0 flex flex-col">
-                    <SheetHeader className="flex-row items-center gap-3 h-20 px-6 border-b space-y-0">
-                        <div className="bg-primary p-3 rounded-xl shadow-md">
-                            <Database className="h-7 w-7 text-primary-foreground" />
+                <SheetContent side="left" className="sm:max-w-xs p-0 flex flex-col glass-panel bg-background/80">
+                    <SheetHeader className="flex-row items-center gap-3 h-20 px-6 border-b border-white/10 space-y-0 relative overflow-hidden">
+                        <div className="absolute top-1/2 left-4 w-12 h-12 bg-primary/20 rounded-full blur-xl -translate-y-1/2"></div>
+                        <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-xl shadow-lg relative z-10 transition-transform hover:scale-105">
+                            <Database className="h-6 w-6 text-white" />
                         </div>
                         <SheetTitle asChild>
-                            <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                            <h1 className="text-2xl font-headline font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent tracking-tighter relative z-10">
                                 SiDATA
                             </h1>
                         </SheetTitle>
@@ -132,11 +133,11 @@ export function MobileHeader() {
                           {utilityLinks.map(createLink)}
                       </nav>
                     </ScrollArea>
-                    <div className="mt-auto p-4 border-t">
+                    <div className="mt-auto p-4 border-t border-white/5">
                         {user && (
                              <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="w-full justify-start items-center gap-4 h-auto p-3 text-left">
+                                    <Button variant="ghost" className="w-full justify-start items-center gap-4 h-auto p-3 text-left hover:bg-primary/10 hover:text-primary transition-all rounded-xl">
                                         <Avatar className="h-10 w-10">
                                             <AvatarFallback className="bg-primary/20 text-primary font-bold capitalize">
                                                 {user.username.charAt(0)}
@@ -197,7 +198,7 @@ export function MobileHeader() {
                 </SheetContent>
             </Sheet>
             <div className="flex items-center gap-3">
-                <h1 className="text-xl font-headline font-bold text-primary tracking-tighter">
+                <h1 className="text-2xl font-headline font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent tracking-tighter">
                 SiDATA
                 </h1>
             </div>

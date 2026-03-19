@@ -50,79 +50,91 @@ export default function DashboardPage() {
 
   return (
     <>
-        <h1 className="text-3xl font-headline font-bold">Dashboard</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="mb-8">
+            <h1 className="text-4xl font-headline font-extrabold tracking-tight text-foreground mb-1">Dashboard</h1>
+            <p className="text-muted-foreground">Ringkasan statistik data UMKM dan Lembaga.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
                 <>
-                    <Skeleton className="h-28" />
-                    <Skeleton className="h-28" />
-                    <Skeleton className="h-28" />
-                    <Skeleton className="h-28" />
+                    <Skeleton className="h-32 rounded-xl" />
+                    <Skeleton className="h-32 rounded-xl" />
+                    <Skeleton className="h-32 rounded-xl" />
+                    <Skeleton className="h-32 rounded-xl" />
                 </>
             ) : (
                 <>
-                    <Card className="bg-secondary transition-all hover:shadow-lg hover:-translate-y-1">
+                    <Card className="glass-card bg-gradient-to-br from-card/80 to-background/50 border-white/10 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-secondary-foreground">Total Data UMKM</CardTitle>
-                            <Users className="h-5 w-5 text-secondary-foreground" />
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total UMKM</CardTitle>
+                            <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
+                                <Users className="h-5 w-5 text-primary" />
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-secondary-foreground">{totalData}</div>
+                            <div className="text-4xl font-extrabold text-foreground group-hover:scale-105 transition-transform origin-left">{totalData}</div>
                         </CardContent>
                     </Card>
-                    <Card className="bg-primary text-primary-foreground transition-all hover:shadow-lg hover:-translate-y-1">
+                    <Card className="glass-card bg-gradient-to-br from-primary/80 to-primary/40 text-primary-foreground border-primary/50 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Jumlah Laki-laki</CardTitle>
-                            <User className="h-5 w-5" />
+                            <CardTitle className="text-sm font-semibold uppercase tracking-wider">Laki-laki</CardTitle>
+                            <div className="bg-white/20 p-2 rounded-lg">
+                                <User className="h-5 w-5 text-white" />
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{maleCount}</div>
+                            <div className="text-4xl font-extrabold group-hover:scale-105 transition-transform origin-left">{maleCount}</div>
                         </CardContent>
                     </Card>
-                    <Card className="bg-accent text-accent-foreground transition-all hover:shadow-lg hover:-translate-y-1">
+                    <Card className="glass-card bg-gradient-to-br from-accent/80 to-accent/40 text-accent-foreground border-accent/50 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Jumlah Perempuan</CardTitle>
-                            <PersonStanding className="h-5 w-5" />
+                            <CardTitle className="text-sm font-semibold uppercase tracking-wider">Perempuan</CardTitle>
+                            <div className="bg-white/20 p-2 rounded-lg">
+                                <PersonStanding className="h-5 w-5 text-white" />
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{femaleCount}</div>
+                            <div className="text-4xl font-extrabold group-hover:scale-105 transition-transform origin-left">{femaleCount}</div>
                         </CardContent>
                     </Card>
-                    <Card className="transition-all hover:shadow-lg hover:-translate-y-1">
+                    <Card className="glass-card bg-gradient-to-br from-card/80 to-background/50 border-white/10 group">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Lembaga</CardTitle>
-                            <Building2 className="h-5 w-5 text-muted-foreground" />
+                            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Lembaga</CardTitle>
+                            <div className="bg-secondary/50 p-2 rounded-lg group-hover:bg-secondary transition-colors">
+                                <Building2 className="h-5 w-5 text-foreground" />
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold">{totalInstitutions}</div>
+                            <div className="text-4xl font-extrabold text-foreground group-hover:scale-105 transition-transform origin-left">{totalInstitutions}</div>
                         </CardContent>
                     </Card>
                 </>
             )}
         </div>
-        <div className="mt-8">
-             <Card>
+        <div className="mt-10">
+             <Card className="glass-card bg-card/60 border-white/10">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-3"><List className="h-6 w-6"/>Aktivitas Terbaru</CardTitle>
-                    <CardDescription>5 data terakhir yang ditambahkan dari UMKM dan Lembaga.</CardDescription>
+                    <CardTitle className="flex items-center gap-3 text-xl"><List className="h-6 w-6 text-primary"/> Aktivitas Terbaru</CardTitle>
+                    <CardDescription className="text-sm">5 data terakhir yang ditambahkan dari UMKM dan Lembaga.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
                          <div className="space-y-4">
-                            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 w-full" />)}
+                            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
                         </div>
                     ) : recentActivity.length > 0 ? (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             {recentActivity.map((item) => (
-                                <Link href={item.href} key={item.id} className="block">
-                                    <div className="flex items-center gap-4 p-3 rounded-lg transition-colors hover:bg-muted/50">
-                                        <div className="bg-muted p-3 rounded-full">
+                                <Link href={item.href} key={item.id} className="block group">
+                                    <div className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-muted/80 hover:shadow-sm border border-transparent hover:border-border">
+                                        <div className="bg-background border border-border/50 p-3 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
                                             {item.icon}
                                         </div>
                                         <div className="flex-1">
-                                            <p className="font-semibold leading-tight">{item.name}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {item.type} &bull; {formatDistanceToNow(item.date, { addSuffix: true })}
+                                            <p className="font-bold text-foreground group-hover:text-primary transition-colors">{item.name}</p>
+                                            <p className="text-sm text-muted-foreground font-medium flex items-center gap-2 mt-0.5">
+                                                <span className="bg-secondary px-2 py-0.5 rounded-md text-xs">{item.type}</span> 
+                                                <span className="text-xs opacity-70">&bull; {formatDistanceToNow(item.date, { addSuffix: true })}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -130,7 +142,10 @@ export default function DashboardPage() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-muted-foreground text-center py-10">Belum ada aktivitas.</p>
+                        <div className="flex flex-col items-center justify-center py-12 text-center bg-muted/20 rounded-xl border border-dashed border-border">
+                            <List className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                            <p className="text-muted-foreground font-medium">Belum ada aktivitas.</p>
+                        </div>
                     )}
                 </CardContent>
             </Card>

@@ -4,52 +4,53 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%; /* Light Grayish Blue */
-    --foreground: 220 15% 20%; /* Dark Blue */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
-    --primary: 220 90% 55%; /* Bright Blue */
-    --primary-foreground: 0 0% 100%; /* White */
-    --secondary: 220 15% 90%;
-    --secondary-foreground: 220 10% 25%;
-    --muted: 220 15% 90%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 260 90% 65%; /* Vibrant Purple */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 85%;
-    --input: 220 15% 92%;
-    --ring: 220 90% 55%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.75rem;
   }
+
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 220 15% 90%;
-    --card: 220 20% 12%;
-    --card-foreground: 220 15% 90%;
-    --popover: 220 20% 10%;
-    --popover-foreground: 220 15% 90%;
-    --primary: 220 90% 65%;
-    --primary-foreground: 220 15% 10%;
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 220 10% 90%;
-    --muted: 220 15% 20%;
-    --muted-foreground: 220 10% 60%;
-    --accent: 260 90% 70%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 25%;
-    --input: 220 15% 22%;
-    --ring: 220 90% 65%;
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 262 83% 65%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -64,5 +65,41 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-background/60 backdrop-blur-md border border-white/10 shadow-sm relative overflow-hidden;
+  }
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden;
+  }
+  .glass-panel {
+    @apply bg-background/50 backdrop-blur-2xl border border-white/5;
+  }
+  .dark .glass {
+    @apply bg-background/40 border-white/5;
+  }
+  .dark .glass-card {
+    @apply bg-card/40 border-white/5 shadow-2xl;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  }
+  
+  /* Animated background decoration */
+  .bg-mesh {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(var(--primary), 0.08), transparent 25%), 
+      radial-gradient(circle at 85% 30%, rgba(var(--accent), 0.08), transparent 25%);
+    background-attachment: fixed;
+    pointer-events: none;
   }
 }
